@@ -186,6 +186,32 @@ public class ContactManager {
 		return localContacts;
 	}
 	
+	public static int getLocalContactsCount(Context context, Account account) {
+		Log.i(TAG, "*** Counting local contacts");
+		
+		final Uri uri = RawContacts.CONTENT_URI.buildUpon()
+			.appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
+			.appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
+			.build();
+		
+		final ContentResolver resolver = context.getContentResolver();
+		final Cursor c = resolver.query(uri,
+				new String[] { Contacts._ID, RawContacts.SOURCE_ID },
+				null, null, null);
+		
+		int count = 0;
+		try {
+			count = c.getCount();
+		} finally {
+			if (c != null) {
+				c.close();
+			}
+		}
+		
+		Log.i(TAG, "*** ... found " + count);
+		return count;
+	}
+	
 	public static List<RawContact> getStarredContacts(Context context, Uri uri) {
 		Log.i(TAG, "*** Looking for starred contacts");
 		

@@ -8,9 +8,14 @@
 	<string name="profile_action">Facebook profile</string>
 	<string name="view_profile">View Profile</string>
 	<string name="facebook_app_id">104789639646317</string>
+	<string name="donate_url">https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=7SUETTCRKTMKY</string>
+	<string name="github_url">https://github.com/loadrunner/Facebook-Contact-Sync</string>
 	
 	<string name="add_account">Add account</string>
 	<string name="exit">Exit</string>
+	
+	<string name="prefs_on">On</string>
+	<string name="prefs_off">Off</string>
 	
 	<string name="prefs_cat_sync_title">Sync settings</string>
 	<string name="prefs_sync_type_title">Sync type</string>
@@ -66,4 +71,8 @@
 	<string name="test_start_btn">Start test</string>
 	<string name="test_auth_key">1. Checking permissions</string>
 	<string name="test_get_friends">2. Checking friends</string>
+	
+	<string name="contact_via">Contact via ..</string>
+	<string name="github_btn">Github</string>
+	<string name="email_btn">Email</string>
 </resources>
