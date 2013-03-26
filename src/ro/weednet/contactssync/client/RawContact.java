@@ -37,6 +37,8 @@ final public class RawContact {
 		public final static int SQUARE = 4;
 		public final static int BIG_SQUARE = 5;
 		public final static int HUGE_SQUARE = 6;
+		public final static int MAX = 7;
+		public final static int MAX_SQUARE = 8;
 	};
 	public class BIRTHDAY_FORMATS {
 		public final static int DEFAULT = 0;

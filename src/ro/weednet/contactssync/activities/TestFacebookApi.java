@@ -132,9 +132,9 @@ public class TestFacebookApi extends Activity {
 								view = params[0];
 								try {
 									long start_time = System.currentTimeMillis();
-									AccountManager am = AccountManager.get(ContactsSync.getInstance().getContext());
-									Account[] accounts = am.getAccountsByType(Constants.AUTHTOKEN_TYPE);
-									String authToken = am.blockingGetAuthToken(accounts[0], Constants.AUTHTOKEN_TYPE, true);
+									AccountManager am = AccountManager.get(TestFacebookApi.this);
+									Account account = ContactsSync.getInstance().getAccount();
+									String authToken = am.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, true);
 									Log.v("TestFB", "token: " + authToken);
 									NetworkUtilities nu = new NetworkUtilities(authToken, TestFacebookApi.this);
 									if (nu.checkAccessToken()) {
@@ -175,12 +175,9 @@ public class TestFacebookApi extends Activity {
 											public void onClick(View v) {
 												Intent intent = new Intent(TestFacebookApi.this, AuthenticatorActivity.class);
 												try {
-													AccountManager am = AccountManager.get(ContactsSync.getInstance().getContext());
-													Account[] accounts = am.getAccountsByType(Constants.AUTHTOKEN_TYPE);
-													intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, accounts[0].name);
-												} catch (Exception e) {
-													
-												}
+													Account account = ContactsSync.getInstance().getAccount();
+													intent.putExtra(AuthenticatorActivity.PARAM_USERNAME, account.name);
+												} catch (Exception e) { }
 												startActivity(intent);
 											//	finish();
 											}
@@ -211,11 +208,11 @@ public class TestFacebookApi extends Activity {
 								view = params[0];
 								try {
 									long start_time = System.currentTimeMillis();
-									AccountManager am = AccountManager.get(ContactsSync.getInstance().getContext());
-									Account[] accounts = am.getAccountsByType(Constants.AUTHTOKEN_TYPE);
-									String authToken = am.blockingGetAuthToken(accounts[0], Constants.AUTHTOKEN_TYPE, true);
+									AccountManager am = AccountManager.get(TestFacebookApi.this);
+									Account account = ContactsSync.getInstance().getAccount();
+									String authToken = am.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, true);
 									NetworkUtilities nu = new NetworkUtilities(authToken, TestFacebookApi.this);
-									List<RawContact> contacts = nu.getContacts(accounts[0]);
+									List<RawContact> contacts = nu.getContacts(account);
 									if (contacts != null) {
 										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(true, "Found " + contacts.size() + " friends"), System.currentTimeMillis() - start_time);
 									} else {

@@ -2,6 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/prefs_cat_sync_title" >
 		<ListPreference
+			android:defaultValue="1"
+			android:entries="@array/prefs_sync_type_entries"
+			android:entryValues="@array/prefs_sync_type_entry_values"
+			android:key="sync_type"
+			android:summary="@string/prefs_sync_type_summary"
+			android:title="@string/prefs_sync_type_title" />
+		<ListPreference
 			android:defaultValue="24"
 			android:entries="@array/prefs_sync_freq_entries"
 			android:entryValues="@array/prefs_sync_freq_entry_values"
@@ -9,14 +16,14 @@
 			android:summary="@string/prefs_sync_freq_summary"
 			android:title="@string/prefs_sync_freq_title" />
 		<ListPreference
-			android:defaultValue="4"
+			android:defaultValue="8"
 			android:entries="@array/prefs_pic_size_entries"
 			android:entryValues="@array/prefs_pic_size_entry_values"
 			android:key="pic_size"
 			android:summary="@string/prefs_sync_pic_size_summary"
 			android:title="@string/prefs_sync_pic_size_title" />
 		<CheckBoxPreference
-			android:defaultValue="true"
+			android:defaultValue="false"
 			android:key="sync_all"
 			android:summary="@string/prefs_sync_all_summary"
 			android:title="@string/prefs_sync_all_title" />
@@ -41,7 +48,7 @@
 			android:summary="@string/prefs_sync_birthdays_summary"
 			android:title="@string/prefs_sync_birthdays_title" />
 		<ListPreference
-			android:defaultValue="0"
+			android:defaultValue="1"
 			android:entries="@array/prefs_birthday_format_entries"
 			android:entryValues="@array/prefs_birthday_format_values"
 			android:key="birthday_format"

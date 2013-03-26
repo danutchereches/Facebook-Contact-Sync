@@ -2,11 +2,11 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="ro.weednet.contactssync"
-	android:versionCode="38"
-	android:versionName="1.1.1">
+	android:versionCode="39"
+	android:versionName="1.2.0">
 	
 	<uses-sdk
-		android:minSdkVersion="8"
+		android:minSdkVersion="14"
 		android:targetSdkVersion="17" />
 	
 	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -51,6 +51,7 @@
 				android:name="android.provider.CONTACTS_STRUCTURE"
 				android:resource="@xml/contacts" />
 		</service>
+		<service android:exported="true" android:name=".notifier.NotifierService" />
 		<activity
 			android:name=".authenticator.AuthenticatorActivity"
 			android:configChanges="orientation"

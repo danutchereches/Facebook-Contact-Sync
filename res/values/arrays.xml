@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string-array name="prefs_sync_type_entries">
+		<item>Soft [fastest]\n  sync details only on demand</item>
+		<item>Medium [recommended]\n  always sync details for starred contacts</item>
+		<item>Hard [only for &lt; 100 contacts]\n  keep all contacts in sync</item>
+		<item>Legacy [deprecated]\n  tries to sync all contacts in one shot and disables "on demand" sync</item>
+	</string-array>
+	<string-array name="prefs_sync_type_entry_values">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+	</string-array>
 	<string-array name="prefs_sync_freq_entries">
 		<item>Disabled</item>
 		<item>1 Hour</item>
@@ -27,15 +39,19 @@
 		<item>720</item>
 	</string-array>
 	<string-array name="prefs_pic_size_entries">
+		<item>Max supported</item>
+		<item>Max supported (cropped)</item>
 		<item>Small square (50x50)</item>
 		<item>Small (max 50x150)</item>
 		<item>Normal (max 100x300)</item>
 		<item>Big (max 200x600)</item>
-		<item>Square (256x256)</item>
-		<item>Big square (512x512)</item>
-		<item>Huge square (720x720)</item>
+		<item>Square (256x256 cropped)</item>
+		<item>Big square (512x512 cropped)</item>
+		<item>Huge square (720x720 cropped)</item>
 	</string-array>
 	<string-array name="prefs_pic_size_entry_values">
+		<item>7</item>
+		<item>8</item>
 		<item>0</item>
 		<item>1</item>
 		<item>2</item>

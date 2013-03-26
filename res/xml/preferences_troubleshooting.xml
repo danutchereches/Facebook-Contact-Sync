@@ -18,12 +18,6 @@
 			android:key="show_notif"
 			android:summary="@string/prefs_show_notif_summary"
 			android:title="@string/prefs_show_notif_title" />
-		<EditTextPreference
-			android:defaultValue="10"
-			android:key="conn_timeout"
-			android:summary="@string/prefs_conn_timeout_summary"
-			android:title="@string/prefs_conn_timeout_title"
-			/>
 		<Preference
 			android:key="test_fb_api"
 			android:summary="@string/prefs_troubleshoot_conn_summary"

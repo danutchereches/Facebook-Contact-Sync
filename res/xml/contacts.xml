@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ContactsSource xmlns:android="http://schemas.android.com/apk/res/android">
+<ContactsAccountType
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	inviteContactActionLabel="@string/invite_action_label"
+	viewGroupActionLabel="@string/view_group_action_label"
+	viewContactNotifyService="ro.weednet.contactssync.notifier.NotifierService">
 	<ContactsDataKind
 		android:mimeType="vnd.android.cursor.item/vnd.ro.weednet.contactssync.profile"
 		android:icon="@drawable/icon"
 		android:summaryColumn="data2"
 		android:detailColumn="data3"
 		android:detailSocialSummary="true" />
-</ContactsSource>
+</ContactsAccountType>

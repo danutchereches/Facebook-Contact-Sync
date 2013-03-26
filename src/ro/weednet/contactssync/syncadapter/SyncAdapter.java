@@ -46,7 +46,9 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract.RawContacts;
 import android.util.Log;
 
 import java.io.IOException;
@@ -71,7 +73,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		String authtoken = null;
 		try {
 		//	ContactManager.setAccountContactsVisibility(getContext(), account, true);
-			
 			ContactsSync app = ContactsSync.getInstance();
 			
 			if (app.getSyncWifiOnly() && !app.wifiConnected()) {
@@ -79,14 +80,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			}
 			
 			authtoken = mAccountManager.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, NOTIFY_AUTH_FAILURE);
-			
 			if (authtoken == null) {
 				throw new AuthenticationException();
 			}
 			
 			final long groupId = ContactManager.ensureGroupExists(mContext, account);
+			final Uri rawContactsUri = RawContacts.CONTENT_URI.buildUpon()
+				.appendQueryParameter(RawContacts.ACCOUNT_NAME, account.name)
+				.appendQueryParameter(RawContacts.ACCOUNT_TYPE, account.type)
+				.build();
 			
-			List<RawContact> localContacts = ContactManager.getLocalContacts(mContext, account);
+			List<RawContact> localContacts = ContactManager.getLocalContacts(mContext, rawContactsUri);
 			
 			if (app.getFullSync()) {
 				ContactManager.deleteContacts(mContext, localContacts);
@@ -98,17 +102,25 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 			List<RawContact> rawContacts = nu.getContacts(account);
 			
 			List<RawContact> syncedContacts = ContactManager.updateContacts(
-				mContext, account.name, rawContacts, groupId,
+				mContext, account, rawContacts, groupId,
 				app.getJoinById(), app.getSyncAllContacts());
 			
 			ContactManager.deleteMissingContacts(mContext, localContacts, syncedContacts);
 			
 			if (app.getJoinById()) {
-				ContactManager.addJoins(mContext, rawContacts);
+				ContactManager.addJoins(mContext, account, rawContacts);
 			}
 			
-			if (app.getSyncStatuses()) {
+			if (app.getSyncStatuses()
+			 && app.getSyncType() == ContactsSync.SyncType.LEGACY) {
 				ContactManager.updateStatusMessages(mContext, rawContacts);
+			}
+			
+			if (app.getSyncType() == ContactsSync.SyncType.HARD) {
+				ContactManager.updateContactDetails(mContext, rawContacts, nu);
+			} else if (app.getSyncType() == ContactsSync.SyncType.MEDIUM) {
+				List<RawContact> starredContacts = ContactManager.getStarredContacts(mContext, rawContactsUri);
+				ContactManager.updateContactDetails(mContext, starredContacts, nu);
 			}
 			
 			NotificationManager mNotificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);

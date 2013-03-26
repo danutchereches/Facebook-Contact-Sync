@@ -142,28 +142,35 @@ final public class NetworkUtilities {
 		String pic_size = null;
 		boolean album_picture = false;
 		
-		switch (pictureSize) {
-			case RawContact.IMAGE_SIZES.SMALL_SQUARE:
-				pic_size = "pic_square";
-				break;
-			case RawContact.IMAGE_SIZES.SMALL:
-				pic_size = "pic_small";
-				break;
-			case RawContact.IMAGE_SIZES.NORMAL:
-				pic_size = "pic";
-				break;
-			case RawContact.IMAGE_SIZES.SQUARE:
-			case RawContact.IMAGE_SIZES.BIG_SQUARE:
-			case RawContact.IMAGE_SIZES.HUGE_SQUARE:
-				album_picture = true;
-			case RawContact.IMAGE_SIZES.BIG:
-				pic_size = "pic_big";
-				break;
+		if (app.getSyncType() == ContactsSync.SyncType.LEGACY) {
+			switch (pictureSize) {
+				case RawContact.IMAGE_SIZES.SMALL_SQUARE:
+					pic_size = "pic_square";
+					break;
+				case RawContact.IMAGE_SIZES.SMALL:
+					pic_size = "pic_small";
+					break;
+				case RawContact.IMAGE_SIZES.NORMAL:
+					pic_size = "pic";
+					break;
+				case RawContact.IMAGE_SIZES.SQUARE:
+				case RawContact.IMAGE_SIZES.BIG_SQUARE:
+				case RawContact.IMAGE_SIZES.HUGE_SQUARE:
+				case RawContact.IMAGE_SIZES.MAX:
+				case RawContact.IMAGE_SIZES.MAX_SQUARE:
+					album_picture = true;
+				case RawContact.IMAGE_SIZES.BIG:
+					pic_size = "pic_big";
+					break;
+			}
+		} else {
+			pic_size = "pic";
+			album_picture = false;
 		}
 		
 		String fields = "uid, username, first_name, last_name, " + pic_size;
 		
-		if (app.getSyncStatuses()) {
+		if (app.getSyncStatuses() && app.getSyncType() == ContactsSync.SyncType.LEGACY) {
 			fields += ", status";
 		}
 		if (app.getSyncBirthdays()) {
@@ -189,6 +196,7 @@ final public class NetworkUtilities {
 				params.putString("method", "fql.query");
 				params.putString("query", query);
 			}
+			
 			params.putInt("timeout", app.getConnectionTimeout() * 1000);
 			Request request = Request.newRestRequest(mSession, "fql.query", params, HttpMethod.GET);
 			Response response = request.executeAndWait();
@@ -227,10 +235,9 @@ final public class NetworkUtilities {
 				JSONObject contact;
 				for (int i = 0; i < serverContacts.length(); i++) {
 					contact = serverContacts.getJSONObject(i);
+					contact.put("picture", !contact.isNull(pic_size) ? contact.getString(pic_size) : null);
 					if (album_picture && serverImages.containsKey(contact.getString("uid"))) {
 						contact.put("picture", serverImages.get(contact.getString("uid")).getString("src_big"));
-					} else {
-						contact.put("picture", !contact.isNull(pic_size) ? contact.getString(pic_size) : null);
 					}
 					if (contact.has("birthday_date") && contact.getString("birthday_date") != null
 					 && app.getSyncBirthdays() && app.getBirthdayFormat() != RawContact.BIRTHDAY_FORMATS.DEFAULT) {
@@ -272,6 +279,39 @@ final public class NetworkUtilities {
 		return serverList;
 	}
 	
+	public ContactPhoto getContactPhotoHD(RawContact contact, int width, int height)
+			throws IOException, AuthenticationException, JSONException {
+		
+		Bundle params = new Bundle();
+		ContactsSync app = ContactsSync.getInstance();
+		params.putInt("width", width);
+		params.putInt("height", height);
+		params.putBoolean("redirect", false);
+		params.putInt("timeout", app.getConnectionTimeout() * 1000);
+		Request request = new Request(mSession, contact.getUid() + "/picture", params, HttpMethod.GET);
+		Response response = request.executeAndWait();
+		
+		if (response == null) {
+			throw new IOException();
+		}
+		if (response.getGraphObject() == null) {
+			if (response.getError() != null) {
+				if (response.getError().getErrorCode() == 190) {
+					throw new AuthenticationException();
+				} else {
+					throw new ParseException(response.getError().getErrorMessage());
+				}
+			} else {
+				throw new ParseException();
+			}
+		}
+		
+		Log.e("FacebookGetPhoto", "response: " + response.getGraphObject().getInnerJSONObject().toString());
+		String image = response.getGraphObject().getInnerJSONObject().getJSONObject("data").getString("url");
+		
+		return new ContactPhoto(contact, image, 0);
+	}
+	
 	/**
 	 * Download the avatar image from the server.
 	 * 
@@ -286,6 +326,7 @@ final public class NetworkUtilities {
 		}
 		
 		try {
+			ContactsSync app = ContactsSync.getInstance();
 			URL url = new URL(avatarUrl);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.connect();
@@ -294,33 +335,39 @@ final public class NetworkUtilities {
 				Bitmap originalImage = BitmapFactory.decodeStream(connection.getInputStream(), null, options);
 				ByteArrayOutputStream convertStream;
 				
-				if (ContactsSync.getInstance().getPictureSize() == RawContact.IMAGE_SIZES.SQUARE
-				 || ContactsSync.getInstance().getPictureSize() == RawContact.IMAGE_SIZES.BIG_SQUARE
-				 || ContactsSync.getInstance().getPictureSize() == RawContact.IMAGE_SIZES.HUGE_SQUARE) {
+				if (app.getPictureSize() == RawContact.IMAGE_SIZES.SQUARE
+				 || app.getPictureSize() == RawContact.IMAGE_SIZES.BIG_SQUARE
+				 || app.getPictureSize() == RawContact.IMAGE_SIZES.HUGE_SQUARE
+				 || app.getPictureSize() == RawContact.IMAGE_SIZES.MAX_SQUARE) {
 					int targetWidth, targetHeight;
-					switch(ContactsSync.getInstance().getPictureSize()) {
+					switch(app.getPictureSize()) {
+						case RawContact.IMAGE_SIZES.MAX_SQUARE:
+							targetWidth  = app.getMaxPhotoSize();
+							targetHeight = app.getMaxPhotoSize();
+							break;
 						case RawContact.IMAGE_SIZES.HUGE_SQUARE:
-							targetWidth  = 720;
-							targetHeight = 720;
+							targetWidth  = Math.min(720, app.getMaxPhotoSize());
+							targetHeight = Math.min(720, app.getMaxPhotoSize());
 							break;
 						case RawContact.IMAGE_SIZES.BIG_SQUARE:
-							targetWidth  = 512;
-							targetHeight = 512;
+							targetWidth  = Math.min(512, app.getMaxPhotoSize());
+							targetHeight = Math.min(512, app.getMaxPhotoSize());
 							break;
 						case RawContact.IMAGE_SIZES.SQUARE:
 						default:
-							targetWidth  = 256;
-							targetHeight = 256;
+							targetWidth  = Math.min(256, app.getMaxPhotoSize());
+							targetHeight = Math.min(256, app.getMaxPhotoSize());
 					}
-				//	Log.v("pic_size", "w:"+targetWidth + ", h:"+targetHeight);
 					
 					int cropWidth = Math.min(originalImage.getWidth(), originalImage.getHeight());
 					int cropHeight = cropWidth;
 					int offsetX = Math.round((originalImage.getWidth() - cropWidth) / 2);
 					int offsetY = Math.round((originalImage.getHeight() - cropHeight) / 2);
 					
+					Log.v("pic_size", "w:"+cropWidth + ", h:"+cropHeight);
+					
 					Bitmap croppedImage = Bitmap.createBitmap(originalImage, offsetX, offsetY, cropWidth, cropHeight);
-					Bitmap resizedBitmap = Bitmap.createScaledBitmap(croppedImage, targetWidth, targetHeight, false);
+					Bitmap resizedBitmap = Bitmap.createScaledBitmap(croppedImage, targetWidth, targetHeight, true);
 					
 					convertStream = new ByteArrayOutputStream(targetWidth * targetHeight * 4);
 					resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, convertStream);
@@ -328,6 +375,7 @@ final public class NetworkUtilities {
 					croppedImage.recycle();
 					resizedBitmap.recycle();
 				} else {
+					Log.v("pic_size", "original: w:"+originalImage.getWidth() + ", h:"+originalImage.getHeight());
 					convertStream = new ByteArrayOutputStream(originalImage.getWidth() * originalImage.getHeight() * 4);
 					originalImage.compress(Bitmap.CompressFormat.JPEG, 95, convertStream);
 				}

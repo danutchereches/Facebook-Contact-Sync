@@ -57,7 +57,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 	public static final String PARAM_USERNAME = "fb_email";
 	public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
 	protected boolean mRequestNewAccount = false;
-	private String mFbEmail;
+	private String mUsername;
 	public final Handler mHandler = new Handler();
 	protected ProgressDialog mLoading;
 	protected AlertDialog mDialog;
@@ -85,8 +85,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 		mAccountManager = AccountManager.get(this);
 		
 		final Intent intent = getIntent();
-		mFbEmail = intent.getStringExtra(PARAM_USERNAME);
-		mRequestNewAccount = mFbEmail == null;
+		mUsername = intent.getStringExtra(PARAM_USERNAME);
+		mRequestNewAccount = mUsername == null;
 		
 		Session session = Session.getActiveSession();
 		
@@ -169,14 +169,18 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 				app.setConnectionTimeout(Preferences.DEFAULT_CONNECTION_TIMEOUT);
 				app.savePreferences();
 				
-				final String username = (String) user.getProperty("email");
+				final String username =
+					user.getUsername() != null && user.getUsername().length() > 0
+					? user.getUsername() : user.getId();
 				final String access_token = Session.getActiveSession().getAccessToken();
 				final int sync_freq = app.getSyncFrequency() * 3600;
 				
-				final Account account = new Account(username, Constants.ACCOUNT_TYPE);
+				Account account;
 				if (mRequestNewAccount) {
+					account = new Account(username, Constants.ACCOUNT_TYPE);
 					mAccountManager.addAccountExplicitly(account, access_token, null);
 				} else {
+					account = new Account(mUsername, Constants.ACCOUNT_TYPE);
 					mAccountManager.setPassword(account, access_token);
 				}
 				

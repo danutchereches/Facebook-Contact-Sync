@@ -22,9 +22,9 @@
  */
 package ro.weednet.contactssync.platform;
 
-import ro.weednet.contactssync.Constants;
 import ro.weednet.contactssync.R;
 import ro.weednet.contactssync.client.NetworkUtilities;
+import android.accounts.Account;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
@@ -39,6 +39,7 @@ import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class ContactOperations {
 	private final ContentValues mValues;
@@ -52,9 +53,9 @@ public class ContactOperations {
 	private boolean mIsYieldAllowed;
 	
 	public static ContactOperations createNewContact(Context context,
-			String userId, String accountName, boolean isSyncOperation,
+			String userId, Account account, boolean isSyncOperation,
 			BatchOperation batchOperation) {
-		return new ContactOperations(context, userId, accountName,
+		return new ContactOperations(context, userId, account,
 				isSyncOperation, batchOperation);
 	}
 	
@@ -70,14 +71,14 @@ public class ContactOperations {
 		mBatchOperation = batchOperation;
 	}
 	
-	public ContactOperations(Context context, String userId, String accountName,
+	public ContactOperations(Context context, String userId, Account account,
 			boolean isSyncOperation, BatchOperation batchOperation) {
 		this(context, isSyncOperation, batchOperation);
 		mBackReference = mBatchOperation.size();
 		mIsNewContact = true;
 		mValues.put(RawContacts.SOURCE_ID, userId);
-		mValues.put(RawContacts.ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
-		mValues.put(RawContacts.ACCOUNT_NAME, accountName);
+		mValues.put(RawContacts.ACCOUNT_TYPE, account.type);
+		mValues.put(RawContacts.ACCOUNT_NAME, account.name);
 		ContentProviderOperation.Builder builder = newInsertCpo(
 				RawContacts.CONTENT_URI, mIsSyncOperation, true).withValues(mValues);
 		mBatchOperation.add(builder.build());
@@ -154,10 +155,14 @@ public class ContactOperations {
 		if (avatarUrl != null) {
 			byte[] avatarBuffer = NetworkUtilities.downloadAvatar(avatarUrl);
 			if (avatarBuffer != null) {
+				Log.e("DownloadPhoto", "image downloaded; addinf");
 				mValues.clear();
+				mValues.put(Photo.DATA1, avatarUrl);
 				mValues.put(Photo.PHOTO, avatarBuffer);
 				mValues.put(Photo.MIMETYPE, Photo.CONTENT_ITEM_TYPE);
 				addInsertOp();
+			} else {
+				Log.e("DownloadPhoto", "failed, buffer null");
 			}
 		}
 		return this;
@@ -226,6 +231,14 @@ public class ContactOperations {
 		return this;
 	}
 	
+	public ContactOperations updateSyncTimestamp(long checkTimestamp, long photoTimestamp, Uri uri) {
+		mValues.clear();
+		mValues.put(RawContacts.SYNC1, checkTimestamp);
+		mValues.put(RawContacts.SYNC2, photoTimestamp);
+		addUpdateOp(uri);
+		return this;
+	}
+	
 	public ContactOperations updatePhone(String existingNumber, String phone, Uri uri) {
 		if (!TextUtils.equals(phone, existingNumber)) {
 			mValues.clear();
@@ -235,16 +248,21 @@ public class ContactOperations {
 		return this;
 	}
 	
-	public ContactOperations updateAvatar(Uri uri, String existingAvatarUrl, String avatarUrl) {
+	public ContactOperations updateAvatar(String existingAvatarUrl, String avatarUrl, Uri uri) {
 		if (avatarUrl != null && !TextUtils.equals(existingAvatarUrl, avatarUrl)) {
 			byte[] avatarBuffer = NetworkUtilities.downloadAvatar(avatarUrl);
 			if (avatarBuffer != null) {
+				Log.e("DownloadPhoto", "image downloaded; updating");
 				mValues.clear();
 				mValues.put(Photo.DATA1, avatarUrl);
 				mValues.put(Photo.PHOTO, avatarBuffer);
 				mValues.put(Photo.MIMETYPE, Photo.CONTENT_ITEM_TYPE);
 				addUpdateOp(uri);
+			} else {
+				Log.e("DownloadPhoto", "failed, buffer null");
 			}
+		} else {
+			Log.e("DownloadPhoto", "not doing it");
 		}
 		return this;
 	}

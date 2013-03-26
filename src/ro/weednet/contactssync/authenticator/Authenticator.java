@@ -103,7 +103,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
 				Log.v(TAG, "getAuthToken() GOOD");
 				final Bundle result = new Bundle();
 				result.putString(AccountManager.KEY_ACCOUNT_NAME, account.name);
-				result.putString(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
+				result.putString(AccountManager.KEY_ACCOUNT_TYPE, account.type);
 				result.putString(AccountManager.KEY_AUTHTOKEN, authToken);
 				return result;
 			} else {

@@ -24,8 +24,12 @@ package ro.weednet;
 
 import com.appbrain.AppBrain;
 
+import ro.weednet.contactssync.Constants;
 import ro.weednet.contactssync.activities.Preferences;
 import ro.weednet.contactssync.client.RawContact;
+import ro.weednet.contactssync.platform.ContactManager;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -33,7 +37,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 public class ContactsSync extends Application {
-	private final static String _namespace = "ro.weednet.contactssync_preferences";
+	public static enum SyncType {
+		SOFT, MEDIUM, HARD, LEGACY
+	}
+	public final static String NAMESPACE = "ro.weednet.contactssync_preferences";
+	
+	private SyncType mSyncType;
 	private int mSyncFreq;
 	private int mPicSize;
 	private boolean mSyncAll;
@@ -47,6 +56,7 @@ public class ContactsSync extends Application {
 	private boolean mShowNotifications;
 	private int mConnTimeout;
 	private boolean mDisableAds;
+	private int mMaxPhotoSize;
 	private static ContactsSync _instance = null;
 	
 	public static ContactsSync getInstance() {
@@ -58,7 +68,7 @@ public class ContactsSync extends Application {
 	}
 	
 	private SharedPreferences getSharedPreferences() {
-		return getSharedPreferences(_namespace, MODE_PRIVATE);
+		return getSharedPreferences(NAMESPACE, MODE_PRIVATE);
 	}
 	
 	public Context getContext() {
@@ -71,9 +81,14 @@ public class ContactsSync extends Application {
 		_instance = this;
 		
 		reloadPreferences();
+		mMaxPhotoSize = ContactManager.getPhotoPickSize(this);
+		
 		AppBrain.initApp(this);
 	}
 	
+	public SyncType getSyncType() {
+		return mSyncType;
+	}
 	public int getSyncFrequency() {
 		return mSyncFreq;
 	}
@@ -113,7 +128,15 @@ public class ContactsSync extends Application {
 	public boolean getDisableAds() {
 		return mDisableAds;
 	}
+	public int getMaxPhotoSize() {
+		return mMaxPhotoSize;
+	}
 	
+	public void setSyncType(int value) {
+		try {
+			mSyncType = SyncType.values()[value];
+		} catch (Exception e) { }
+	}
 	public void setSyncFrequency(int value) {
 		if (value >= 0 || value <= 720) {
 			mSyncFreq = value;
@@ -126,7 +149,9 @@ public class ContactsSync extends Application {
 		 || value == RawContact.IMAGE_SIZES.BIG
 		 || value == RawContact.IMAGE_SIZES.SQUARE
 		 || value == RawContact.IMAGE_SIZES.BIG_SQUARE
-		 || value == RawContact.IMAGE_SIZES.HUGE_SQUARE) {
+		 || value == RawContact.IMAGE_SIZES.HUGE_SQUARE
+		 || value == RawContact.IMAGE_SIZES.MAX
+		 || value == RawContact.IMAGE_SIZES.MAX_SQUARE) {
 			mPicSize = value;
 		}
 	}
@@ -179,6 +204,12 @@ public class ContactsSync extends Application {
 		SharedPreferences settings = getSharedPreferences();
 		
 		try {
+			int type = Integer.parseInt(settings.getString("sync_type", Integer.toString(Preferences.DEFAULT_SYNC_TYPE.ordinal())));
+			mSyncType = SyncType.values()[type];
+		} catch (Exception e) {
+			mSyncType = Preferences.DEFAULT_SYNC_TYPE;
+		}
+		try {
 			mSyncFreq = Integer.parseInt(settings.getString("sync_freq", Integer.toString(Preferences.DEFAULT_SYNC_FREQUENCY)));//hours
 		} catch (NumberFormatException e) {
 			mSyncFreq = Preferences.DEFAULT_SYNC_FREQUENCY;
@@ -211,6 +242,8 @@ public class ContactsSync extends Application {
 	
 	public void savePreferences() {
 		SharedPreferences.Editor editor = getSharedPreferences().edit();
+		
+		editor.putString("sync_type", Integer.toString(mSyncType.ordinal()));
 		editor.putString("sync_freq", Integer.toString(mSyncFreq));
 		editor.putString("pic_size", Integer.toString(mPicSize));
 		editor.putBoolean("sync_all", mSyncAll);
@@ -223,6 +256,7 @@ public class ContactsSync extends Application {
 		editor.putBoolean("full_sync", mFullSync);
 		editor.putString("conn_timeout", Integer.toString(mConnTimeout));
 		editor.putBoolean("disable_ads", mDisableAds);
+		
 		editor.commit();
 	}
 	
@@ -235,5 +269,16 @@ public class ContactsSync extends Application {
 		}
 		
 		return networkInfo == null ? false : networkInfo.isConnected();
+	}
+	
+	public Account getAccount() {
+		AccountManager am = AccountManager.get(this);
+		Account[] accounts = am.getAccountsByType(Constants.ACCOUNT_TYPE);
+		
+		if (accounts.length > 0) {
+			return accounts[0];
+		}
+		
+		return null;
 	}
 }
