@@ -6,8 +6,8 @@
 	android:versionName="2.0.0">
 	
 	<uses-sdk
-		android:minSdkVersion="8"
-		android:targetSdkVersion="17" />
+		android:minSdkVersion="11"
+		android:targetSdkVersion="19" />
 	
 	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
 	<uses-permission android:name="android.permission.USE_CREDENTIALS" />
@@ -97,20 +97,9 @@
 			android:value="@string/facebook_app_id" />
 		<activity android:name="com.facebook.LoginActivity"></activity>
 		
-		<meta-data
-			android:name="applovin.sdk.key"
-			android:value="u8D2q5yisTf-a6WW7-61Nb_kb0IaC_p4706y53eyXIx6PRdXQkTpJTWwZqVmqIryIyuO_WKXqGeEhGm7_JwJsR" />
-		
 		<activity
 			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
 			android:name="com.appbrain.AppBrainActivity" />
 		<service android:name="com.appbrain.AppBrainService" />
-		<receiver
-			android:exported="true"
-			android:name="com.appbrain.ReferrerReceiver">
-			<intent-filter>
-				<action android:name="com.android.vending.INSTALL_REFERRER" />
-			</intent-filter>
-		</receiver>
 	</application>
 </manifest>

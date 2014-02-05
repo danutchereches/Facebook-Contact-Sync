@@ -27,7 +27,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
@@ -117,7 +116,6 @@ public class GlobalFragment extends PreferenceFragment {
 		
 		setSyncEvents();
 		setTroubleshootEvents();
-		setOtherEvents();
 		setAboutEvents();
 	}
 	
@@ -150,9 +148,6 @@ public class GlobalFragment extends PreferenceFragment {
 		findPreference("test_fb_api").setIntent(test_intent);
 		
 		findPreference("contact_bug").setOnPreferenceClickListener(contactListener);
-	}
-	protected void setOtherEvents() {
-		findPreference("disable_ads").setOnPreferenceChangeListener(disableAdsChange);
 	}
 	protected void setAboutEvents() {
 		Intent donate_intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.donate_url)));
@@ -426,22 +421,6 @@ public class GlobalFragment extends PreferenceFragment {
 			dialog.show();
 			
 			return true;
-		}
-	};
-	
-	Preference.OnPreferenceChangeListener disableAdsChange = new Preference.OnPreferenceChangeListener() {
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			try {
-				ContactsSync app = ContactsSync.getInstance();
-				app.setDisableAds((Boolean) newValue);
-				
-				((LinearLayout) getActivity().findViewById(R.id.ad_container)).setVisibility(View.GONE);
-				
-				return true;
-			} catch (Exception e) {
-				Log.d("contactsync-preferences", "error: " + e.getMessage());
-				return false;
-			}
 		}
 	};
 }

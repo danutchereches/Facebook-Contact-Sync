@@ -22,8 +22,6 @@
  */
 package ro.weednet;
 
-import com.appbrain.AppBrain;
-
 import ro.weednet.contactssync.Constants;
 import ro.weednet.contactssync.activities.Preferences;
 import ro.weednet.contactssync.client.RawContact;
@@ -51,7 +49,6 @@ public class ContactsSync extends Application {
 	private boolean mJoinById;
 	private boolean mShowNotifications;
 	private int mConnTimeout;
-	private boolean mDisableAds;
 	private int mMaxPhotoSize;
 	private static ContactsSync _instance = null;
 	
@@ -78,8 +75,6 @@ public class ContactsSync extends Application {
 		
 		reloadPreferences();
 		mMaxPhotoSize = ContactManager.getPhotoPickSize(this);
-		
-		AppBrain.initApp(this);
 	}
 	
 	public SyncType getSyncType() {
@@ -108,9 +103,6 @@ public class ContactsSync extends Application {
 	}
 	public int getConnectionTimeout() {
 		return mConnTimeout;
-	}
-	public boolean getDisableAds() {
-		return mDisableAds;
 	}
 	public int getMaxPhotoSize() {
 		return mMaxPhotoSize;
@@ -166,9 +158,6 @@ public class ContactsSync extends Application {
 		editor.putBoolean("full_sync", mFullSync);
 		editor.commit();
 	}
-	public void setDisableAds(boolean value) {
-		mDisableAds = value;
-	}
 	
 	public void reloadPreferences() {
 		SharedPreferences settings = getSharedPreferences();
@@ -199,7 +188,6 @@ public class ContactsSync extends Application {
 		} catch (NumberFormatException e) {
 			mConnTimeout = Preferences.DEFAULT_CONNECTION_TIMEOUT;
 		}
-		mDisableAds = settings.getBoolean("disable_ads", Preferences.DEFAULT_DISABLE_ADS);
 	}
 	
 	public void savePreferences() {
@@ -213,7 +201,6 @@ public class ContactsSync extends Application {
 		editor.putBoolean("sync_join_by_id", mJoinById);
 		editor.putBoolean("full_sync", mFullSync);
 		editor.putString("conn_timeout", Integer.toString(mConnTimeout));
-		editor.putBoolean("disable_ads", mDisableAds);
 		
 		editor.commit();
 	}

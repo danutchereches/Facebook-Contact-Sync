@@ -22,8 +22,6 @@
  */
 package ro.weednet.contactssync.activities;
 
-import com.appbrain.AppBrain;
-
 import ro.weednet.ContactsSync;
 import ro.weednet.contactssync.R;
 import ro.weednet.contactssync.authenticator.AuthenticatorActivity;
@@ -44,7 +42,6 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class Preferences extends Activity {
@@ -83,16 +80,6 @@ public class Preferences extends Activity {
 		super.onCreate(icicle);
 		
 		setContentView(R.layout.preferences);
-		
-		ContactsSync app = ContactsSync.getInstance();
-		
-		if (!app.getDisableAds()) {
-			LinearLayout adContainer = (LinearLayout) findViewById(R.id.ad_container);
-			View ad = getLayoutInflater().inflate(R.layout.applovin, null);
-			adContainer.addView(ad);
-		} else {
-			((LinearLayout) findViewById(R.id.ad_container)).setVisibility(View.GONE);
-		}
 		
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		mFragment = new GlobalFragment();
@@ -174,18 +161,6 @@ public class Preferences extends Activity {
 		
 		if (mSyncObserverHandler != null) {
 			ContentResolver.removeStatusChangeListener(mSyncObserverHandler);
-		}
-	}
-	
-	@Override
-	public void onBackPressed() {
-		ContactsSync app = ContactsSync.getInstance();
-		
-		if (!app.getDisableAds()) {
-			AppBrain.getAds().maybeShowInterstitial(this);
-			finish();
-		} else {
-			super.onBackPressed();
 		}
 	}
 	
