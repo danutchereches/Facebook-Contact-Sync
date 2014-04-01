@@ -220,6 +220,15 @@ public class Preferences extends Activity {
 	}
 	
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		
+		if (mDialog != null) {
+			mDialog.dismiss();
+		}
+	}
+	
+	@Override
 	public void onBackPressed() {
 		ContactsSync app = ContactsSync.getInstance();
 		

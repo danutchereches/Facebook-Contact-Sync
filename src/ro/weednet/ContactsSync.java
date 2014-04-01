@@ -179,11 +179,7 @@ public class ContactsSync extends Application {
 	public void reloadPreferences() {
 		SharedPreferences settings = getSharedPreferences();
 		
-		if (settings.getAll().size() > 0) {
-			mWizardShown = settings.getBoolean("wizard_shown", true);
-		} else {
-			mWizardShown = settings.getBoolean("wizard_shown", false);
-		}
+		mWizardShown = settings.getBoolean("wizard_shown", settings.getAll().size() > 5 ? true : false);
 		
 		try {
 			int type = Integer.parseInt(settings.getString("sync_type", Integer.toString(Preferences.DEFAULT_SYNC_TYPE.ordinal())));
