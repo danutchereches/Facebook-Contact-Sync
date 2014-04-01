@@ -58,6 +58,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Provides utility methods for communicating with the server.
@@ -180,11 +181,13 @@ final public class NetworkUtilities {
 				String query2 = "SELECT owner, src_big, modified FROM photo WHERE pid IN (SELECT cover_pid FROM album WHERE owner IN (SELECT uid FROM #query1) AND type = 'profile')";
 				params.putString("method", "fql.multiquery");
 				params.putString("queries", "{\"query1\":\"" + query1 + "\", \"query2\":\"" + query2 + "\"}");
+				params.putString("locale", getDefaultLocale());
 			} else {
 				limit = 1000;
 				String query = "SELECT " + fields + " FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me()) LIMIT " + limit + " OFFSET " + offset;
 				params.putString("method", "fql.query");
 				params.putString("query", query);
+				params.putString("locale", getDefaultLocale());
 			}
 			
 			params.putInt("timeout", app.getConnectionTimeout() * 1000);
@@ -248,7 +251,11 @@ final public class NetworkUtilities {
 		
 		return serverList;
 	}
-	
+
+	private String getDefaultLocale() {
+		return Locale.getDefault().toString();
+	}
+
 	public ContactPhoto getContactPhotoHD(RawContact contact, int width, int height)
 			throws IOException, AuthenticationException, JSONException {
 		
