@@ -28,7 +28,6 @@ import java.sql.Date;
 
 import com.ironsource.mobilcore.CallbackResponse;
 import com.ironsource.mobilcore.MobileCore;
-import com.ironsource.mobilcore.CallbackResponse.TYPE;
 
 import ro.weednet.ContactsSync;
 import ro.weednet.ContactsSync.SyncType;
