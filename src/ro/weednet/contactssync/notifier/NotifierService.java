@@ -76,6 +76,7 @@ public class NotifierService extends IntentService {
 			String uid = c.getString(c.getColumnIndex(RawContacts.SOURCE_ID));
 			RawContact rawContact = RawContact.create(rawContactId, uid);
 			long checkTimestamp = c.getLong(c.getColumnIndex(RawContacts.SYNC1));
+			String avatarUrl = c.getString(c.getColumnIndex(RawContacts.SYNC2));
 			
 			if (System.currentTimeMillis() - checkTimestamp < Math.min(14400000, app.getSyncFrequency() * 3600000)) {
 				Log.i(TAG, "contact up to date. quiting");
@@ -109,7 +110,9 @@ public class NotifierService extends IntentService {
 					int size = ContactManager.getPhotoPickSize(this);
 					//TODO: use selected value
 					ContactPhoto photo = nu.getContactPhotoHD(rawContact, size, size);
-					ContactManager.updateContactPhotoHd(this, resolver, rawContactId, photo, batchOperation);
+					if (!photo.getPhotoUrl().equals(avatarUrl)) {
+						ContactManager.setContactPhoto(this, resolver, rawContactId, photo.getPhotoUrl(), batchOperation, true);
+					}
 				} catch (Exception e) {
 					Log.i(TAG, "photo update error: " + e.getMessage());
 					e.printStackTrace();

@@ -23,7 +23,6 @@
 package ro.weednet.contactssync.platform;
 
 import ro.weednet.contactssync.R;
-import ro.weednet.contactssync.client.NetworkUtilities;
 import android.accounts.Account;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
@@ -32,12 +31,10 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.GroupMembership;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
 import android.text.TextUtils;
-import android.util.Log;
 
 public class ContactOperations {
 	private final ContentValues mValues;
@@ -116,22 +113,6 @@ public class ContactOperations {
 		return this;
 	}
 	
-	public ContactOperations addAvatar(String avatarUrl) {
-		if (avatarUrl != null) {
-			byte[] avatarBuffer = NetworkUtilities.downloadAvatar(avatarUrl);
-			if (avatarBuffer != null) {
-				mValues.clear();
-				mValues.put(Photo.DATA1, avatarUrl);
-				mValues.put(Photo.PHOTO, avatarBuffer);
-				mValues.put(Photo.MIMETYPE, Photo.CONTENT_ITEM_TYPE);
-				addInsertOp();
-			} else {
-				Log.e("DownloadPhoto", "failed, buffer null");
-			}
-		}
-		return this;
-	}
-	
 	public ContactOperations addProfileAction(String userId) {
 		mValues.clear();
 		if (userId != null) {
@@ -175,33 +156,17 @@ public class ContactOperations {
 		return this;
 	}
 	
-	public ContactOperations updateSyncTimestamp1(long timestsamp, Uri uri) {
+	public ContactOperations updateSyncData1(String data, Uri uri) {
 		mValues.clear();
-		mValues.put(RawContacts.SYNC1, timestsamp);
+		mValues.put(RawContacts.SYNC1, data);
 		addUpdateOp(uri);
 		return this;
 	}
 	
-	public ContactOperations updateSyncTimestamp2(long timestsamp, Uri uri) {
+	public ContactOperations updateSyncData2(String data, Uri uri) {
 		mValues.clear();
-		mValues.put(RawContacts.SYNC2, timestsamp);
+		mValues.put(RawContacts.SYNC2, data);
 		addUpdateOp(uri);
-		return this;
-	}
-	
-	public ContactOperations updateAvatar(String existingAvatarUrl, String avatarUrl, Uri uri) {
-		if (avatarUrl != null && !TextUtils.equals(existingAvatarUrl, avatarUrl)) {
-			byte[] avatarBuffer = NetworkUtilities.downloadAvatar(avatarUrl);
-			if (avatarBuffer != null) {
-				mValues.clear();
-				mValues.put(Photo.DATA1, avatarUrl);
-				mValues.put(Photo.PHOTO, avatarBuffer);
-				mValues.put(Photo.MIMETYPE, Photo.CONTENT_ITEM_TYPE);
-				addUpdateOp(uri);
-			} else {
-				Log.e("DownloadPhoto", "failed, buffer null");
-			}
-		}
 		return this;
 	}
 	

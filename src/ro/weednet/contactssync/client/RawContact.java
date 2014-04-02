@@ -44,7 +44,7 @@ final public class RawContact {
 	/** The tag used to log to adb console. **/
 	private static final String TAG = "RawContact";
 	
-	private final long mRawContactId;
+	private long mRawContactId;
 	private final String mUid;
 	private final String mFirstName;
 	private final String mLastName;
@@ -80,6 +80,9 @@ final public class RawContact {
 		return mJoinContactId;
 	}
 	
+	public void setRawContactId(long id) {
+		mRawContactId = id;
+	}
 	public void setJoinContactId(long id) {
 		mJoinContactId = id;
 	}
