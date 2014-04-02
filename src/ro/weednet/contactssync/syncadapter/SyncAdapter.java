@@ -111,8 +111,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				ContactManager.addJoins(mContext, account, rawContacts);
 			}
 			
+			localContacts = ContactManager.getLocalContacts(mContext, rawContactsUri);
+			
 			if (app.getSyncType() == ContactsSync.SyncType.HARD) {
-				localContacts = ContactManager.getLocalContacts(mContext, rawContactsUri);
 				ContactManager.updateContactDetails(mContext, localContacts, nu);
 			} else if (app.getSyncType() == ContactsSync.SyncType.MEDIUM) {
 				List<RawContact> starredContacts = ContactManager.getStarredContacts(mContext, rawContactsUri);

@@ -312,30 +312,11 @@ final public class NetworkUtilities {
 				Bitmap originalImage = BitmapFactory.decodeStream(connection.getInputStream(), null, options);
 				ByteArrayOutputStream convertStream;
 				
+				//TODO: remove all sized as they they are not used
 				if (app.getPictureSize() == RawContact.IMAGE_SIZES.SQUARE
 				 || app.getPictureSize() == RawContact.IMAGE_SIZES.BIG_SQUARE
 				 || app.getPictureSize() == RawContact.IMAGE_SIZES.HUGE_SQUARE
 				 || app.getPictureSize() == RawContact.IMAGE_SIZES.MAX_SQUARE) {
-					int targetWidth, targetHeight;
-					switch(app.getPictureSize()) {
-						case RawContact.IMAGE_SIZES.MAX_SQUARE:
-							targetWidth  = app.getMaxPhotoSize();
-							targetHeight = app.getMaxPhotoSize();
-							break;
-						case RawContact.IMAGE_SIZES.HUGE_SQUARE:
-							targetWidth  = Math.min(720, app.getMaxPhotoSize());
-							targetHeight = Math.min(720, app.getMaxPhotoSize());
-							break;
-						case RawContact.IMAGE_SIZES.BIG_SQUARE:
-							targetWidth  = Math.min(512, app.getMaxPhotoSize());
-							targetHeight = Math.min(512, app.getMaxPhotoSize());
-							break;
-						case RawContact.IMAGE_SIZES.SQUARE:
-						default:
-							targetWidth  = Math.min(256, app.getMaxPhotoSize());
-							targetHeight = Math.min(256, app.getMaxPhotoSize());
-					}
-					
 					int cropWidth = Math.min(originalImage.getWidth(), originalImage.getHeight());
 					int cropHeight = cropWidth;
 					int offsetX = Math.round((originalImage.getWidth() - cropWidth) / 2);
@@ -344,13 +325,10 @@ final public class NetworkUtilities {
 					Log.v("pic_size", "w:"+cropWidth + ", h:"+cropHeight);
 					
 					Bitmap croppedImage = Bitmap.createBitmap(originalImage, offsetX, offsetY, cropWidth, cropHeight);
-					Bitmap resizedBitmap = Bitmap.createScaledBitmap(croppedImage, targetWidth, targetHeight, true);
 					
-					convertStream = new ByteArrayOutputStream(targetWidth * targetHeight * 4);
-					resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, convertStream);
-					
+					convertStream = new ByteArrayOutputStream(cropWidth * cropHeight * 4);
+					croppedImage.compress(Bitmap.CompressFormat.JPEG, 95, convertStream);
 					croppedImage.recycle();
-					resizedBitmap.recycle();
 				} else {
 					Log.v("pic_size", "original: w:"+originalImage.getWidth() + ", h:"+originalImage.getHeight());
 					convertStream = new ByteArrayOutputStream(originalImage.getWidth() * originalImage.getHeight() * 4);

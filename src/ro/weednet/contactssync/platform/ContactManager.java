@@ -28,11 +28,11 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
-import android.provider.ContactsContract.CommonDataKinds.Photo;
 import android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Data;
@@ -42,6 +42,7 @@ import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.StreamItems;
 import android.util.Log;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,7 +51,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.http.auth.AuthenticationException;
-import org.json.JSONException;
 
 import ro.weednet.ContactsSync;
 import ro.weednet.contactssync.client.ContactPhoto;
@@ -106,9 +106,9 @@ public class ContactManager {
 		
 		Log.d(TAG, "In updateContacts");
 		for (final RawContact rawContact : rawContacts) {
-			
 			final long rawContactId = lookupRawContact(resolver, account, rawContact.getUid());
 			if (rawContactId != 0) {
+				rawContact.setRawContactId(rawContactId);
 				updateContact(context, resolver, rawContact, true, true, rawContactId, batchOperation);
 				syncList.add(rawContact);
 			} else {
@@ -126,6 +126,21 @@ public class ContactManager {
 				batchOperation.execute();
 			}
 		}
+		
+		batchOperation.execute();
+		
+		for (final RawContact rawContact : rawContacts) {
+			if (rawContact.getRawContactId() <= 0) {
+				Log.d(TAG, "adding inital thumbnail for contact " + rawContact.getUid());
+				final long rawContactId = lookupRawContact(resolver, account, rawContact.getUid());
+				ContactManager.setContactPhoto(context, resolver, rawContactId, rawContact.getAvatarUrl(), batchOperation, false);
+				
+				if (batchOperation.size() >= 10) {
+					batchOperation.execute();
+				}
+			}
+		}
+		
 		batchOperation.execute();
 		
 		return syncList;
@@ -141,11 +156,13 @@ public class ContactManager {
 		while (iterator.hasNext()) {
 			RawContact contact = iterator.next();
 			try {
-				Log.i(TAG, "checking user: " + contact.getUid());
+				Log.i(TAG, "checking user: " + contact.getUid() + " av " + contact.getAvatarUrl());
 				//TODO: use selected value
 				ContactPhoto photo = nu.getContactPhotoHD(contact, pictureSize, pictureSize);
-				ContactManager.updateContactPhotoHd(context, resolver, contact.getRawContactId(), photo, batchOperation);
-			} catch (JSONException e) {
+				if (!photo.getPhotoUrl().equals(contact.getAvatarUrl())) {
+					ContactManager.setContactPhoto(context, resolver, contact.getRawContactId(), photo.getPhotoUrl(), batchOperation, true);
+				}
+			} catch (Exception e) {
 				Log.e(TAG, e.toString());
 			}
 			if (batchOperation.size() >= 10) {
@@ -162,13 +179,11 @@ public class ContactManager {
 		
 		final ContentResolver resolver = context.getContentResolver();
 		final Cursor c = resolver.query(uri,
-				new String[] { Contacts._ID, RawContacts.SOURCE_ID },
+				new String[] { Contacts._ID, RawContacts.SOURCE_ID, RawContacts.SYNC1, RawContacts.SYNC2 },
 				null, null, null);
 		try {
 			while (c.moveToNext()) {
-				final long rawContactId = c.getLong(0);
-				final String serverContactId = c.getString(1);
-				RawContact rawContact = RawContact.create(rawContactId, serverContactId);
+				RawContact rawContact = new RawContact(c.getLong(0), c.getString(1), null, null, c.getString(3), c.getLong(2));
 				localContacts.add(rawContact);
 			}
 		} finally {
@@ -320,8 +335,7 @@ public class ContactManager {
 		
 		contactOp
 				.addName(rawContact.getFirstName(), rawContact.getLastName())
-				.addGroupMembership(groupId)
-				.addAvatar(rawContact.getAvatarUrl());
+				.addGroupMembership(groupId);
 		
 		// If we have a serverId, then go ahead and create our status profile.
 		// Otherwise skip it - and we'll create it after we sync-up to the
@@ -334,9 +348,6 @@ public class ContactManager {
 	public static void updateContact(Context context, ContentResolver resolver,
 			RawContact rawContact, boolean updateAvatar, boolean inSync,
 			long rawContactId, BatchOperation batchOperation) {
-		
-		ContactsSync app = ContactsSync.getInstance();
-		boolean existingAvatar = false;
 		
 		final Cursor c = resolver.query(DataQuery.CONTENT_URI,
 				DataQuery.PROJECTION, DataQuery.SELECTION,
@@ -355,41 +366,10 @@ public class ContactManager {
 							c.getString(DataQuery.COLUMN_FAMILY_NAME),
 							rawContact.getFirstName(),
 							rawContact.getLastName());
-			/*	} else if (mimeType.equals(Phone.CONTENT_ITEM_TYPE)) {
-					final int type = c.getInt(DataQuery.COLUMN_PHONE_TYPE);
-					if (type == Phone.TYPE_MOBILE) {
-						existingCellPhone = true;
-						contactOp.updatePhone(
-								c.getString(DataQuery.COLUMN_PHONE_NUMBER),
-								"5345345", uri);
-					} else if (type == Phone.TYPE_HOME) {
-						existingHomePhone = true;
-						contactOp.updatePhone(
-								c.getString(DataQuery.COLUMN_PHONE_NUMBER),
-								"5345345", uri);
-					} else if (type == Phone.TYPE_WORK) {
-						existingWorkPhone = true;
-						contactOp.updatePhone(
-								c.getString(DataQuery.COLUMN_PHONE_NUMBER),
-								"5345345", uri);
-					}
-				*/
-				} else if (mimeType.equals(Photo.CONTENT_ITEM_TYPE)) {
-					existingAvatar = true;
-					if (app.getSyncType() == ContactsSync.SyncType.LEGACY) {
-						contactOp.updateAvatar(c.getString(DataQuery.COLUMN_DATA1),
-							rawContact.getAvatarUrl(), uri);
-					}
 				}
 			} // while
 		} finally {
 			c.close();
-		}
-		
-		// Add the avatar if we didn't update the existing avatar
-		if (app.getSyncType() != ContactsSync.SyncType.HARD
-		 && !existingAvatar) {
-			contactOp.addAvatar(rawContact.getAvatarUrl());
 		}
 		
 		// If we don't have a status profile, then create one. This could
@@ -402,25 +382,31 @@ public class ContactManager {
 		}
 	}
 	
-	public static void updateContactPhotoHd(Context context, ContentResolver resolver,
-			long rawContactId, ContactPhoto photo, BatchOperation batchOperation) {
-		final Cursor c = resolver.query(DataQuery.CONTENT_URI, DataQuery.PROJECTION,
-			Data.RAW_CONTACT_ID + "=? AND " + Data.MIMETYPE + "=?",
-			new String[] { String.valueOf(rawContactId), Photo.CONTENT_ITEM_TYPE}, null);
-		final ContactOperations contactOp = ContactOperations.updateExistingContact(context, rawContactId, true, batchOperation);
-		
-		if ((c != null) && c.moveToFirst()) {
-			final long id = c.getLong(DataQuery.COLUMN_ID);
-			final Uri uri = ContentUris.withAppendedId(Data.CONTENT_URI, id);
-			contactOp.updateAvatar(c.getString(DataQuery.COLUMN_DATA1), photo.getPhotoUrl(), uri);
-			c.close();
-		} else {
-			Log.i(TAG, "creating row, count: " + c.getCount());
-			contactOp.addAvatar(photo.getPhotoUrl());
+	public static void setContactPhoto(Context context, ContentResolver resolver,
+			long rawContactId, String avatarUrl, BatchOperation batchOperation, boolean highRes) {
+		Uri rawContactUri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId);
+		Uri outputFileUri = Uri.withAppendedPath(rawContactUri, RawContacts.DisplayPhoto.CONTENT_DIRECTORY);
+		try {
+			AssetFileDescriptor descriptor = context.getContentResolver().openAssetFileDescriptor(outputFileUri, "rw");
+			FileOutputStream stream = descriptor.createOutputStream();
+			
+			try {
+				stream.write(NetworkUtilities.downloadAvatar(avatarUrl));
+			} finally {
+				stream.close();
+				descriptor.close();
+			}
+		} catch (IOException e) {
+			
 		}
-		Log.d(TAG, "updating check timestamp");
-		final Uri uri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId);
-		contactOp.updateSyncTimestamp1(System.currentTimeMillis(), uri);
+		
+		if (highRes) {
+			Log.d(TAG, "updating check timestamp and avatar url");
+			final ContactOperations contactOp = ContactOperations.updateExistingContact(context, rawContactId, true, batchOperation);
+			final Uri uri = ContentUris.withAppendedId(RawContacts.CONTENT_URI, rawContactId);
+			contactOp.updateSyncData1(Long.toString(System.currentTimeMillis()), uri);
+			contactOp.updateSyncData2(avatarUrl, uri);
+		}
 	}
 	
 	public static void addAggregateException(Context context, Account account,
