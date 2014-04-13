@@ -50,6 +50,7 @@ public class ContactsSync extends Application {
 	private boolean mShowNotifications;
 	private int mConnTimeout;
 	private boolean mDisableAds;
+	private long mLastAdTimestamp;
 	private int mMaxPhotoSize;
 	private boolean mWizardShown;
 	private static ContactsSync _instance = null;
@@ -108,6 +109,9 @@ public class ContactsSync extends Application {
 	}
 	public boolean getDisableAds() {
 		return mDisableAds;
+	}
+	public long getLastAdTimestamp() {
+		return mLastAdTimestamp;
 	}
 	public int getMaxPhotoSize() {
 		return mMaxPhotoSize;
@@ -172,6 +176,9 @@ public class ContactsSync extends Application {
 	public void setDisableAds(boolean value) {
 		mDisableAds = value;
 	}
+	public void setLastAdTimestamp(long timestamp) {
+		mLastAdTimestamp = timestamp;
+	}
 	public void setWizardShown(boolean value) {
 		mWizardShown = value;
 	}
@@ -208,6 +215,7 @@ public class ContactsSync extends Application {
 			mConnTimeout = Preferences.DEFAULT_CONNECTION_TIMEOUT;
 		}
 		mDisableAds = settings.getBoolean("disable_ads", Preferences.DEFAULT_DISABLE_ADS);
+		mLastAdTimestamp = settings.getLong("ad_timestamp", 0);
 	}
 	
 	public void savePreferences() {
@@ -222,6 +230,7 @@ public class ContactsSync extends Application {
 		editor.putBoolean("full_sync", mFullSync);
 		editor.putString("conn_timeout", Integer.toString(mConnTimeout));
 		editor.putBoolean("disable_ads", mDisableAds);
+		editor.putLong("ad_timestamp", mLastAdTimestamp);
 		editor.putBoolean("wizard_shown", mWizardShown);
 		
 		editor.commit();

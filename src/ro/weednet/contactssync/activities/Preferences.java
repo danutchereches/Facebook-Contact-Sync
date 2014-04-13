@@ -105,7 +105,6 @@ public class Preferences extends Activity {
 		ft.commit();
 		
 		MobileCore.init(this, "3QBXU338FKE1M2ZSZEH3WRKIXJ0C5", MobileCore.LOG_TYPE.PRODUCTION, MobileCore.AD_UNITS.OFFERWALL);
-		MobileCore.refreshOffers();
 	}
 	
 	@Override
@@ -117,6 +116,10 @@ public class Preferences extends Activity {
 		}
 		
 		final ContactsSync app = ContactsSync.getInstance();
+		
+		if (app.getLastAdTimestamp() + 3 * 60 * 60 * 1000 < System.currentTimeMillis()) {
+			MobileCore.refreshOffers();
+		}
 		
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancelAll();
@@ -232,9 +235,13 @@ public class Preferences extends Activity {
 	public void onBackPressed() {
 		ContactsSync app = ContactsSync.getInstance();
 		
-		if (app.getDisableAds() || !MobileCore.isOfferwallReady()) {
+		if (app.getDisableAds() || !MobileCore.isOfferwallReady()
+		 || app.getLastAdTimestamp() + 3 * 60 * 60 * 1000 > System.currentTimeMillis()) {
 			super.onBackPressed();
 		} else {
+			app.setLastAdTimestamp(System.currentTimeMillis());
+			app.savePreferences();
+			
 			MobileCore.showOfferWall(this, new CallbackResponse() {
 				@Override
 				public void onConfirmation(TYPE arg0) {
