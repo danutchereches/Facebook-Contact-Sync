@@ -105,6 +105,7 @@ public class Preferences extends Activity {
 		ft.commit();
 		
 		MobileCore.init(this, "3QBXU338FKE1M2ZSZEH3WRKIXJ0C5", MobileCore.LOG_TYPE.PRODUCTION, MobileCore.AD_UNITS.OFFERWALL);
+		MobileCore.refreshOffers();
 	}
 	
 	@Override
@@ -231,7 +232,7 @@ public class Preferences extends Activity {
 	public void onBackPressed() {
 		ContactsSync app = ContactsSync.getInstance();
 		
-		if (app.getDisableAds()) {
+		if (app.getDisableAds() || !MobileCore.isOfferwallReady()) {
 			super.onBackPressed();
 		} else {
 			MobileCore.showOfferWall(this, new CallbackResponse() {
