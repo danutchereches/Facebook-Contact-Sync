@@ -34,3 +34,7 @@
 -dontwarn android.webkit.JavascriptInterface
 
 -keep class com.ironsource.mobilcore.*{ *; }
+
+#temp
+-keep class com.facebook.** { *; }
+-keep class ro.weednet.** { *; }
