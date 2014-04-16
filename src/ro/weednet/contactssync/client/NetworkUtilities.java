@@ -47,6 +47,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -67,6 +68,10 @@ final public class NetworkUtilities {
 	private Session mSession;
 	
 	public NetworkUtilities(String token, Context context) {
+		if (Looper.myLooper() == null) {
+			Looper.prepare();
+		}
+		
 		AccessToken accessToken = AccessToken.createFromExistingAccessToken(token, null, null, null, null);
 		mSession = Session.getActiveSession();
 		if (mSession == null) {
