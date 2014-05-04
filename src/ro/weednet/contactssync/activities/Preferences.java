@@ -31,6 +31,10 @@ import ro.weednet.ContactsSync.SyncType;
 import ro.weednet.contactssync.R;
 import ro.weednet.contactssync.authenticator.AuthenticatorActivity;
 import ro.weednet.contactssync.client.RawContact;
+import ro.weednet.contactssync.iap.IabHelper;
+import ro.weednet.contactssync.iap.IabResult;
+import ro.weednet.contactssync.iap.Inventory;
+import ro.weednet.contactssync.iap.Purchase;
 import ro.weednet.contactssync.platform.ContactManager;
 import ro.weednet.contactssync.preferences.GlobalFragment;
 import android.accounts.Account;
@@ -46,6 +50,7 @@ import android.content.SyncStatusObserver;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -64,6 +69,7 @@ public class Preferences extends Activity {
 	public final static int DEFAULT_CONNECTION_TIMEOUT = 60;
 	public final static boolean DEFAULT_DISABLE_ADS = false;
 	
+	private static IabHelper mIabHelper;
 	private Account mAccount;
 	private Dialog mDialog;
 	private GlobalFragment mFragment;
@@ -96,6 +102,24 @@ public class Preferences extends Activity {
 		mFragment = new GlobalFragment();
 		ft.replace(R.id.settings, mFragment);
 		ft.commit();
+		
+		String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzCn4NiQYkkpjiyxIxy6lt/45KM5XtLm7swu5xYXocWQCK4HTreuXBsLhh7UlsKo2me3Fyju8PtBnDPG2IGEWQa3VIviMYpeEz6QzimWrODUZImWJboQQL8IFYjjXP3QphmQG3HXYmMfmyj11FJbgMtaMCoj/WhKYEOBhN54+hn4wk4U2ABF2L/lgyOE3t3PoRauPhroxK1alBLVvA6urXVkMQzv5Nt+frIkJA7pYKpLf5vM5U7kgCZLBysn2xaiS/b7Wenlt9dO7QngyL2Pf4qH7eJYr7QzazF0/69Lt0oZwP69GV1ljlmguJK0KhdrS4+2H0dSSSVD5Bmq4/GOjJQIDAQAB";
+		
+		mIabHelper = new IabHelper(this, base64EncodedPublicKey);
+		mIabHelper.enableDebugLogging(true);
+		mIabHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+			public void onIabSetupFinished(IabResult result) {
+				if (!result.isSuccess()) {
+					return;
+				}
+				
+				if (mIabHelper == null) {
+					return;
+				}
+				
+				mIabHelper.queryInventoryAsync(mGotInventoryListener);
+			}
+		});
 	}
 	
 	@Override
@@ -216,6 +240,16 @@ public class Preferences extends Activity {
 		if (mDialog != null) {
 			mDialog.dismiss();
 		}
+		
+		if (mIabHelper != null) {
+			mIabHelper.dispose();
+		}
+	}
+	
+	protected final void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		mIabHelper.handleActivityResult(requestCode, resultCode, data);
 	}
 	
 	@Override
@@ -270,5 +304,83 @@ public class Preferences extends Activity {
 		} catch (Exception e) { }
 		
 		return -1;
+	}
+	
+	// Listener that's called when we finish querying the items and subscriptions we own
+	IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+		public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
+			Log.d("inapppurchases", "Query inventory finished.");
+			
+			// Have we been disposed of in the meantime? If so, quit.
+			if (mIabHelper == null)
+				return;
+			
+			// Is it a failure?
+			if (result.isFailure()) {
+				//
+				return;
+			}
+			
+			Log.d("inapppurchases", "Query inventory was successful.");
+			
+			for (Purchase purchase : inventory.getAllPurchases()) {
+				Log.d("inapppurchases", "We have " + purchase.getSku() + ". Consuming it.");
+				mIabHelper.consumeAsync(purchase, mConsumeFinishedListener);
+				return;
+			}
+			
+			Log.d("inapppurchases", "Initial inventory query finished; enabling main UI.");
+		}
+	};
+	
+	// Callback for when a purchase is finished
+	IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+		public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+			Log.d("inapppurchases", "Purchase finished: " + result + ", purchase: " + purchase);
+			
+			// if we were disposed of in the meantime, quit.
+			if (mIabHelper == null)
+				return;
+			
+			if (result.isFailure()) {
+				if (result.getResponse() != IabHelper.IABHELPER_USER_CANCELLED) {
+					//
+				}
+				return;
+			}
+			
+			Log.d("inapppurchases", "Purchase successful.");
+			mIabHelper.consumeAsync(purchase, mConsumeFinishedListener);
+		}
+	};
+	
+	// Called when consumption is complete
+	IabHelper.OnConsumeFinishedListener mConsumeFinishedListener = new IabHelper.OnConsumeFinishedListener() {
+		public void onConsumeFinished(Purchase purchase, IabResult result) {
+			Log.d("inapppurchases", "Consumption finished. Purchase: " + purchase + ", result: " + result);
+			
+			// if we were disposed of in the meantime, quit.
+			if (mIabHelper == null) {
+				return;
+			}
+			
+			// We know this is the "gas" sku because it's the only one we consume,
+			// so we don't check which sku was consumed. If you have more than one
+			// sku, you probably should check...
+			if (result.isSuccess()) {
+				// successfully consumed, so we apply the effects of the item in  our
+				// game world's logic, which in our case means filling the gas tank a bit
+				Log.d("inapppurchases", "Consumption successful. Provisioning.");
+				
+				//purchase.getSku())
+				//TODO: gggggg
+			}
+			
+			Log.d("inapppurchases", "End consumption flow.");
+		}
+	};
+	
+	public void buy(String sku) {
+		mIabHelper.launchPurchaseFlow(this, sku, 1234, mPurchaseFinishedListener);
 	}
 }
