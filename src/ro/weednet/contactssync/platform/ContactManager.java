@@ -107,17 +107,19 @@ public class ContactManager {
 		Log.d(TAG, "In updateContacts");
 		for (final RawContact rawContact : rawContacts) {
 			final long rawContactId = lookupRawContact(resolver, account, rawContact.getUid());
-			if (rawContactId != 0) {
+			if (rawContactId > 0) {
 				rawContact.setRawContactId(rawContactId);
 				updateContact(context, resolver, rawContact, true, true, rawContactId, batchOperation);
 				syncList.add(rawContact);
 			} else {
 				long contactId = lookupContact(resolver, rawContact.getFullName(), rawContact.getUid(), joinById, allContacts);
 				if (joinById && contactId > 0) {
+					rawContact.setRawContactId(0);
 					rawContact.setJoinContactId(contactId);
 				}
 				if (allContacts || contactId >= 0) {
 					addContact(context, account, rawContact, groupId, true, batchOperation);
+					rawContact.setRawContactId(0);
 					syncList.add(rawContact);
 				}
 			}
@@ -130,7 +132,7 @@ public class ContactManager {
 		batchOperation.execute();
 		
 		for (final RawContact rawContact : rawContacts) {
-			if (rawContact.getRawContactId() <= 0) {
+			if (rawContact.getRawContactId() >= 0) {
 				Log.d(TAG, "adding inital thumbnail for contact " + rawContact.getUid());
 				final long rawContactId = lookupRawContact(resolver, account, rawContact.getUid());
 				ContactManager.setContactPhoto(context, resolver, rawContactId, rawContact.getAvatarUrl(), batchOperation, false);
