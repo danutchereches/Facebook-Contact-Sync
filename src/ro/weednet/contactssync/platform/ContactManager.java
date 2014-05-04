@@ -132,7 +132,7 @@ public class ContactManager {
 		batchOperation.execute();
 		
 		for (final RawContact rawContact : rawContacts) {
-			if (rawContact.getRawContactId() >= 0) {
+			if (rawContact.getRawContactId() == 0) {
 				Log.d(TAG, "adding inital thumbnail for contact " + rawContact.getUid());
 				final long rawContactId = lookupRawContact(resolver, account, rawContact.getUid());
 				ContactManager.setContactPhoto(context, resolver, rawContactId, rawContact.getAvatarUrl(), batchOperation, false);
