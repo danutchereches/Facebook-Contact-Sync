@@ -30,4 +30,9 @@
 -keepattributes *Annotation*
 -dontwarn android.webkit.JavascriptInterface
 
+#applovin
+-keep class com.applovin.** { *; }
+-dontwarn com.applovin.**
+
+#mobilecore
 -keep class com.ironsource.mobilcore.*{ *; }
