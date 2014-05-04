@@ -22,9 +22,6 @@
 -keepattributes Signature
 -keep class com.facebook.model.** { *; }
 
--keep class com.applovin.** { *; }
--dontwarn com.applovin.**
-
 -keep public class cmn.Proguard$KeepMembers 
 -keep public class * implements cmn.Proguard$KeepMembers
 -keepclassmembers class * implements cmn.Proguard$KeepMembers { 

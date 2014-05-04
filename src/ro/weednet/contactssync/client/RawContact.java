@@ -133,7 +133,7 @@ final public class RawContact {
 			final String avatarUrl = !contact.isNull("picture") ?
 					contact.getString("picture") : null;
 			final long syncState = !contact.isNull("x") ? contact.getLong("x") : 0;
-			return new RawContact(0, uid, firstName, lastName, avatarUrl, syncState);
+			return new RawContact(-1, uid, firstName, lastName, avatarUrl, syncState);
 		} catch (final Exception ex) {
 			Log.i(TAG, "Error parsing JSON contact object" + ex.toString());
 		}
@@ -141,7 +141,7 @@ final public class RawContact {
 	}
 	
 	public static RawContact create(String uid, String firstName, String lastName) {
-		return new RawContact(0, uid, firstName, lastName, null, -1);
+		return new RawContact(-1, uid, firstName, lastName, null, -1);
 	}
 	public static RawContact create(long rawContactId, String uid) {
 		return new RawContact(rawContactId, uid, null, null, null, -1);
