@@ -100,6 +100,8 @@ public class Preferences extends Activity {
 		if (app.getDisableAds()) {
 			((LinearLayout) findViewById(R.id.ad_container)).setVisibility(View.GONE);
 		} else {
+			MobileCore.init(this, "3QBXU338FKE1M2ZSZEH3WRKIXJ0C5", MobileCore.LOG_TYPE.PRODUCTION, MobileCore.AD_UNITS.OFFERWALL);
+			
 			LinearLayout adContainer = (LinearLayout) findViewById(R.id.ad_container);
 			View ad = getLayoutInflater().inflate(R.layout.applovin, null);
 			adContainer.addView(ad);
@@ -110,7 +112,6 @@ public class Preferences extends Activity {
 		ft.replace(R.id.settings, mFragment);
 		ft.commit();
 		
-		MobileCore.init(this, "3QBXU338FKE1M2ZSZEH3WRKIXJ0C5", MobileCore.LOG_TYPE.PRODUCTION, MobileCore.AD_UNITS.OFFERWALL);
 		
 		String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzCn4NiQYkkpjiyxIxy6lt/45KM5XtLm7swu5xYXocWQCK4HTreuXBsLhh7UlsKo2me3Fyju8PtBnDPG2IGEWQa3VIviMYpeEz6QzimWrODUZImWJboQQL8IFYjjXP3QphmQG3HXYmMfmyj11FJbgMtaMCoj/WhKYEOBhN54+hn4wk4U2ABF2L/lgyOE3t3PoRauPhroxK1alBLVvA6urXVkMQzv5Nt+frIkJA7pYKpLf5vM5U7kgCZLBysn2xaiS/b7Wenlt9dO7QngyL2Pf4qH7eJYr7QzazF0/69Lt0oZwP69GV1ljlmguJK0KhdrS4+2H0dSSSVD5Bmq4/GOjJQIDAQAB";
 		
@@ -141,7 +142,8 @@ public class Preferences extends Activity {
 		
 		final ContactsSync app = ContactsSync.getInstance();
 		
-		if (app.getLastAdTimestamp() + 3 * 60 * 60 * 1000 < System.currentTimeMillis()) {
+		if (!app.getDisableAds()
+		 && app.getLastAdTimestamp() + 3 * 60 * 60 * 1000 < System.currentTimeMillis()) {
 			MobileCore.refreshOffers();
 		}
 		
