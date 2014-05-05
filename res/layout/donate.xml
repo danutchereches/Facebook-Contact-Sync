@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center"
+	android:gravity="center"
+	android:orientation="vertical"
+	android:padding="20dp">
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<TextView
+			android:layout_weight="35"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:textSize="18sp"
+			android:gravity="center"
+			android:text="@string/donate_gp_btn" />
+		<LinearLayout
+			android:layout_weight="65"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="horizontal">
+			<Button
+				android:id="@+id/gp_1_btn"
+				android:layout_width="50dp"
+				android:layout_height="wrap_content"
+				android:text="@string/donate_gp_1_btn" />
+			<Button
+				android:id="@+id/gp_2_btn"
+				android:layout_width="50dp"
+				android:layout_height="wrap_content"
+				android:text="@string/donate_gp_2_btn" />
+			<Button
+				android:id="@+id/gp_5_btn"
+				android:layout_width="50dp"
+				android:layout_height="wrap_content"
+				android:text="@string/donate_gp_5_btn" />
+		</LinearLayout>
+	</LinearLayout>
+	<Button
+		android:id="@+id/paypal_btn"
+		android:layout_width="250dp"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:text="@string/donate_paypal_btn" />
+</LinearLayout>

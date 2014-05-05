@@ -9,6 +9,8 @@ import ro.weednet.ContactsSync;
 import ro.weednet.contactssync.R;
 import ro.weednet.contactssync.activities.Preferences;
 import ro.weednet.contactssync.activities.TestFacebookApi;
+import ro.weednet.contactssync.iap.IabHelper;
+import ro.weednet.contactssync.iap.IabResult;
 import android.accounts.Account;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -156,8 +158,7 @@ public class GlobalFragment extends PreferenceFragment {
 		findPreference("disable_ads").setOnPreferenceChangeListener(disableAdsChange);
 	}
 	protected void setAboutEvents() {
-		Intent donate_intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.donate_url)));
-		findPreference("donate").setIntent(donate_intent);
+		findPreference("donate").setOnPreferenceClickListener(donateListener);
 		
 		String version = "";
 		try {
@@ -440,7 +441,40 @@ public class GlobalFragment extends PreferenceFragment {
 			return true;
 		}
 	};
-	
+	Preference.OnPreferenceClickListener donateListener = new Preference.OnPreferenceClickListener() {
+		@Override
+		public boolean onPreferenceClick(Preference preference) {
+			final Dialog dialog = new Dialog(getPreferenceActivity());
+			dialog.setContentView(R.layout.donate);
+			dialog.setTitle(getString(R.string.donate_title));
+			dialog.findViewById(R.id.gp_1_btn).setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					getPreferenceActivity().buy("donate_1");
+				}
+			});
+			dialog.findViewById(R.id.gp_2_btn).setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					getPreferenceActivity().buy("donate_2");
+				}
+			});
+			dialog.findViewById(R.id.gp_5_btn).setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					getPreferenceActivity().buy("donate_5");
+				}
+			});
+			dialog.findViewById(R.id.paypal_btn).setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					Intent donate_intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.donate_paypal_url)));
+					startActivity(donate_intent);
+					
+					dialog.dismiss();
+				}
+			});
+			dialog.show();
+			
+			return true;
+		}
+	};
 	Preference.OnPreferenceChangeListener disableAdsChange = new Preference.OnPreferenceChangeListener() {
 		public boolean onPreferenceChange(Preference preference, Object newValue) {
 			try {

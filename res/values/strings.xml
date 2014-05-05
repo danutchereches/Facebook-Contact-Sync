@@ -8,7 +8,7 @@
 	<string name="profile_action">Facebook profile</string>
 	<string name="view_profile">View Profile</string>
 	<string name="facebook_app_id">104789639646317</string>
-	<string name="donate_url">https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=7SUETTCRKTMKY</string>
+	<string name="donate_paypal_url">https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=7SUETTCRKTMKY</string>
 	<string name="github_url">https://github.com/loadrunner/Facebook-Contact-Sync</string>
 	
 	<string name="add_account">Connect Facebook account</string>
@@ -80,4 +80,10 @@
 	<string name="contact_via">Contact via ..</string>
 	<string name="github_btn">Github</string>
 	<string name="email_btn">Email</string>
+	<string name="donate_title">Donate</string>
+	<string name="donate_gp_btn">Google Play:</string>
+	<string name="donate_gp_1_btn">$1</string>
+	<string name="donate_gp_2_btn">$2</string>
+	<string name="donate_gp_5_btn">$5</string>
+	<string name="donate_paypal_btn">PayPal</string>
 </resources>
