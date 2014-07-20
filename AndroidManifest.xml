@@ -103,15 +103,5 @@
 			android:name="applovin.sdk.key"
 			android:value="u8D2q5yisTf-a6WW7-61Nb_kb0IaC_p4706y53eyXIx6PRdXQkTpJTWwZqVmqIryIyuO_WKXqGeEhGm7_JwJsR" />
 		
-		<!-- MobileCore -->
-		<service
-			android:name="com.ironsource.mobilcore.MobileCoreReport"
-			android:enabled="true"
-			android:exported="false"
-			android:process=":mcServiceProcess" />
-		<receiver
-			android:name="com.ironsource.mobilcore.InstallationTracker"
-			android:enabled="true"
-			android:process=":installationTracker" />
 	</application>
 </manifest>

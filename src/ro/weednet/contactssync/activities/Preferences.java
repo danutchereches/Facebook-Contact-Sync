@@ -26,9 +26,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Date;
 
-import com.ironsource.mobilcore.CallbackResponse;
-import com.ironsource.mobilcore.MobileCore;
-
 import ro.weednet.ContactsSync;
 import ro.weednet.ContactsSync.SyncType;
 import ro.weednet.contactssync.R;
@@ -100,7 +97,7 @@ public class Preferences extends Activity {
 		if (app.getDisableAds()) {
 			((LinearLayout) findViewById(R.id.ad_container)).setVisibility(View.GONE);
 		} else {
-			MobileCore.init(this, "3QBXU338FKE1M2ZSZEH3WRKIXJ0C5", MobileCore.LOG_TYPE.PRODUCTION, MobileCore.AD_UNITS.OFFERWALL);
+			//
 			
 			LinearLayout adContainer = (LinearLayout) findViewById(R.id.ad_container);
 			View ad = getLayoutInflater().inflate(R.layout.applovin, null);
@@ -144,7 +141,7 @@ public class Preferences extends Activity {
 		
 		if (!app.getDisableAds()
 		 && app.getLastAdTimestamp() + 3 * 60 * 60 * 1000 < System.currentTimeMillis()) {
-			MobileCore.refreshOffers();
+			//
 		}
 		
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -273,19 +270,14 @@ public class Preferences extends Activity {
 	public void onBackPressed() {
 		ContactsSync app = ContactsSync.getInstance();
 		
-		if (app.getDisableAds() || !MobileCore.isOfferwallReady()
-		 || app.getLastAdTimestamp() + 3 * 60 * 60 * 1000 > System.currentTimeMillis()) {
+		if (app.getDisableAds()
+		/* || app.getLastAdTimestamp() + 3 * 60 * 60 * 1000 > System.currentTimeMillis()*/) {
 			super.onBackPressed();
 		} else {
 			app.setLastAdTimestamp(System.currentTimeMillis());
 			app.savePreferences();
 			
-			MobileCore.showOfferWall(this, new CallbackResponse() {
-				@Override
-				public void onConfirmation(TYPE arg0) {
-					finish();
-				}
-			});
+			super.onBackPressed();
 		}
 	}
 	
