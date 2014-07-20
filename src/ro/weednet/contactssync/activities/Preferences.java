@@ -26,6 +26,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Date;
 
+import com.applovin.sdk.AppLovinSdk;
+
 import ro.weednet.ContactsSync;
 import ro.weednet.ContactsSync.SyncType;
 import ro.weednet.contactssync.R;
@@ -97,7 +99,7 @@ public class Preferences extends Activity {
 		if (app.getDisableAds()) {
 			((LinearLayout) findViewById(R.id.ad_container)).setVisibility(View.GONE);
 		} else {
-			//
+			AppLovinSdk.initializeSdk(this);
 			
 			LinearLayout adContainer = (LinearLayout) findViewById(R.id.ad_container);
 			View ad = getLayoutInflater().inflate(R.layout.applovin, null);

@@ -102,6 +102,8 @@
 		<meta-data
 			android:name="applovin.sdk.key"
 			android:value="u8D2q5yisTf-a6WW7-61Nb_kb0IaC_p4706y53eyXIx6PRdXQkTpJTWwZqVmqIryIyuO_WKXqGeEhGm7_JwJsR" />
+		<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" />
+		<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />
 		
 	</application>
 </manifest>
