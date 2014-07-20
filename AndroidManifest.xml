@@ -97,6 +97,9 @@
 			android:name="com.facebook.sdk.ApplicationId"
 			android:value="@string/facebook_app_id" />
 		<activity android:name="com.facebook.LoginActivity"></activity>
+		<meta-data
+			android:name="com.google.android.gms.version"
+			android:value="@integer/google_play_services_version" />
 		
 		<!-- AppLovin -->
 		<meta-data
