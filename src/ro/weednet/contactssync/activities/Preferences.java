@@ -257,7 +257,9 @@ public class Preferences extends Activity {
 		}
 		
 		if (mIabHelper != null) {
-			mIabHelper.dispose();
+			try {
+				mIabHelper.dispose();
+			} catch (IllegalArgumentException e) { }
 		}
 	}
 	
