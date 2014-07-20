@@ -108,5 +108,13 @@
 		<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" />
 		<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" />
 		
+		<!-- StartApp -->
+		<activity
+			android:name="com.startapp.android.publish.list3d.List3DActivity"
+			android:theme="@android:style/Theme" />
+		<activity
+			android:name="com.startapp.android.publish.AppWallActivity"
+			android:theme="@android:style/Theme.Translucent"
+			android:configChanges="orientation|keyboardHidden|screenSize" />
 	</application>
 </manifest>
