@@ -52,7 +52,7 @@ import android.util.Log;
  * that prompts the user for their login information.
  */
 public class Authenticator extends AbstractAccountAuthenticator {
-	public static final String[] REQUIRED_PERMISSIONS = {"email", "friends_photos"};
+	public static final String[] REQUIRED_PERMISSIONS = {"public_profile", "email", "user_friends"};
 	private static final String TAG = "Authenticator";
 	private final Context mContext;
 	

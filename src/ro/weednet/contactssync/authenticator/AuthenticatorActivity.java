@@ -171,8 +171,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 				app.savePreferences();
 				
 				final String username =
-					user.getUsername() != null && user.getUsername().length() > 0
-					? user.getUsername() : user.getId();
+					user.getProperty("email") != null && ((String) user.getProperty("email")).length() > 0
+					? (String) user.getProperty("email") : user.getId();
 				final String access_token = Session.getActiveSession().getAccessToken();
 				final int sync_freq = app.getSyncFrequency() * 3600;
 				
