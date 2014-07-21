@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Date;
 
+import com.appbrain.AppBrain;
 import com.applovin.adview.AppLovinAdView;
 import com.applovin.adview.AppLovinInterstitialAd;
 import com.applovin.adview.AppLovinInterstitialAdDialog;
@@ -34,9 +35,6 @@ import com.applovin.sdk.AppLovinAdDisplayListener;
 import com.applovin.sdk.AppLovinAdLoadListener;
 import com.applovin.sdk.AppLovinAdSize;
 import com.applovin.sdk.AppLovinSdk;
-import com.startapp.android.publish.StartAppAd;
-import com.startapp.android.publish.StartAppSDK;
-import com.startapp.android.publish.banner.Banner;
 
 import ro.weednet.ContactsSync;
 import ro.weednet.ContactsSync.SyncType;
@@ -98,7 +96,6 @@ public class Preferences extends Activity {
 	};
 	private Object mSyncObserverHandler = null;
 	
-	private StartAppAd startAppAd = null;
 	private AppLovinAd appLovinAd = null;
 	
 	@Override
@@ -109,7 +106,6 @@ public class Preferences extends Activity {
 		
 		if (!app.getDisableAds()) {
 			AppLovinSdk.initializeSdk(this);
-			StartAppSDK.init(this, "101088846", "201672582", false);
 		}
 		
 		setContentView(R.layout.preferences);
@@ -117,8 +113,6 @@ public class Preferences extends Activity {
 		if (app.getDisableAds()) {
 			((LinearLayout) findViewById(R.id.ad_container)).setVisibility(View.GONE);
 		} else {
-			startAppAd = new StartAppAd(this);
-			
 			final AppLovinSdk applovinSDK = AppLovinSdk.getInstance(this);
 			applovinSDK.getAdService().loadNextAd(AppLovinAdSize.BANNER, new AppLovinAdLoadListener() {
 				@Override
@@ -126,8 +120,7 @@ public class Preferences extends Activity {
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							//View adView = getLayoutInflater().inflate(R.layout.startapp, null);
-							View adView = new Banner(Preferences.this);
+							View adView = getLayoutInflater().inflate(R.layout.appbrain, null);
 							LinearLayout adContainer = (LinearLayout) findViewById(R.id.ad_container);
 							adContainer.addView(adView);
 						}
@@ -159,7 +152,6 @@ public class Preferences extends Activity {
 					appLovinAd = ad;
 				}
 			});
-
 		}
 		
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -196,10 +188,6 @@ public class Preferences extends Activity {
 		}
 		
 		final ContactsSync app = ContactsSync.getInstance();
-		
-		if (!app.getDisableAds() && startAppAd != null) {
-			startAppAd.onResume();
-		}
 		
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancelAll();
@@ -300,12 +288,6 @@ public class Preferences extends Activity {
 		if (mSyncObserverHandler != null) {
 			ContentResolver.removeStatusChangeListener(mSyncObserverHandler);
 		}
-		
-		final ContactsSync app = ContactsSync.getInstance();
-		
-		if (!app.getDisableAds() && startAppAd != null) {
-			startAppAd.onResume();
-		}
 	}
 	
 	@Override
@@ -340,10 +322,7 @@ public class Preferences extends Activity {
 			app.setLastAdTimestamp(System.currentTimeMillis());
 			app.savePreferences();
 			
-			if (startAppAd != null && startAppAd.isReady()) {
-				startAppAd.onBackPressed();
-				super.onBackPressed();
-			} else if (appLovinAd != null) {
+			if (appLovinAd != null) {
 				AppLovinInterstitialAdDialog adDialog = AppLovinInterstitialAd.create(AppLovinSdk.getInstance(this), Preferences.this);
 				adDialog.setAdDisplayListener(new AppLovinAdDisplayListener() {
 					@Override
@@ -359,6 +338,8 @@ public class Preferences extends Activity {
 				adDialog.showAndRender(appLovinAd);
 			} else {
 				super.onBackPressed();
+				
+				AppBrain.getAds().showInterstitial(this);
 			}
 		}
 	}

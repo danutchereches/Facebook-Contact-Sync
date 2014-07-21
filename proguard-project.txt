@@ -52,12 +52,14 @@
     public static final ** CREATOR;
 }
 
-#startapp
--keep class com.startapp.** {
-      *;
+#appbrain
+-keep public class cmn.Proguard$KeepMembers 
+-keep public class * implements cmn.Proguard$KeepMembers
+-keepclassmembers class * implements cmn.Proguard$KeepMembers { 
+   <methods>; 
 }
-
--keepattributes Exceptions, InnerClasses, Signature, Deprecated, SourceFile,
-LineNumberTable, *Annotation*, EnclosingMethod
+-keepattributes *Annotation*
+-keep class android.webkit.JavascriptInterface
 -dontwarn android.webkit.JavascriptInterface
--dontwarn com.startapp.**
+# This is only needed when you don't include the Google Play services:
+-dontwarn com.google.android.gms.**
