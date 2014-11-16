@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="prefs_sync_type_entries">
+		<item>Leggera [più veloce]:\nsincronizza dettagli solo su richiesta</item>
+		<item>Media [consigliata]:\nsincronizza sempre i dettagli per i contatti preferiti</item>
+		<item>Pesante [solo per meno di 100 contatti]:\nmantieni sincronizzati tutti i dettagli di tutti i contatti</item>
+		<item>Antiquata [deprecata]:\nprova a sincronizzare tutti i contatti e rimuove la sincronizzazione "su richiesta"</item>
+	</string-array>
+	<string-array name="prefs_sync_type_entry_values">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+	</string-array>
+	<string-array name="prefs_sync_freq_entries">
+		<item>Disabilitata</item>
+		<item>1 ora</item>
+		<item>3 ore</item>
+		<item>6 ore</item>
+		<item>12 ore</item>
+		<item>1 giorno</item>
+		<item>2 giorni</item>
+		<item>4 giorni</item>
+		<item>1 settimana</item>
+		<item>2 settimane</item>
+		<item>1 mese</item>
+	</string-array>
+	<string-array name="prefs_sync_freq_entry_values">
+		<item>0</item>
+		<item>1</item>
+		<item>3</item>
+		<item>6</item>
+		<item>12</item>
+		<item>24</item>
+		<item>48</item>
+		<item>96</item>
+		<item>168</item>
+		<item>336</item>
+		<item>720</item>
+	</string-array>
+	<string-array name="prefs_pic_size_entries">
+		<item>Massima supportata</item>
+		<item>Massima supportata (ritagliata)</item>
+		<item>Piccola e quadrata (50x50)</item>
+		<item>Piccola (max 50x150)</item>
+		<item>Normale (max 100x300)</item>
+		<item>Grande (max 200x600)</item>
+		<item>Quadrata (256x256 ritagliata)</item>
+		<item>Grande e quadrata (512x512 ritagliata)</item>
+		<item>Molto grande e quadrata (720x720 ritagliata)</item>
+	</string-array>
+	<string-array name="prefs_pic_size_entry_values">
+		<item>7</item>
+		<item>8</item>
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+	</string-array>
+</resources>
