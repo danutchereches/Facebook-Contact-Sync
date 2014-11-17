@@ -63,3 +63,7 @@
 -dontwarn android.webkit.JavascriptInterface
 # This is only needed when you don't include the Google Play services:
 -dontwarn com.google.android.gms.**
+
+#mobilecore
+-keepattributes InnerClasses, EnclosingMethod
+-keep class com.ironsource.mobilcore.*{ *; }

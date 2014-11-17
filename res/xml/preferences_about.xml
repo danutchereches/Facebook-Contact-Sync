@@ -2,14 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 	<PreferenceCategory android:title="@string/prefs_cat_about_title" >
 		<Preference
-			android:key="rate_app"
-			android:summary="@string/prefs_rate_app_summary"
-			android:title="@string/prefs_rate_app_title" />
-		<Preference
-			android:key="donate"
-			android:summary="@string/prefs_donate_summary"
-			android:title="@string/prefs_donate_title" />
-		<Preference
 			android:key="version"
 			android:summary=""
 			android:title="@string/prefs_version_title" />

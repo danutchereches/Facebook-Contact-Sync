@@ -9,15 +9,12 @@ import ro.weednet.ContactsSync;
 import ro.weednet.contactssync.R;
 import ro.weednet.contactssync.activities.Preferences;
 import ro.weednet.contactssync.activities.TestFacebookApi;
-import ro.weednet.contactssync.iap.IabHelper;
-import ro.weednet.contactssync.iap.IabResult;
 import android.accounts.Account;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,7 +27,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
@@ -110,7 +106,6 @@ public class GlobalFragment extends PreferenceFragment {
 		
 		addPreferencesFromResource(R.xml.preferences_sync);
 		addPreferencesFromResource(R.xml.preferences_troubleshooting);
-		addPreferencesFromResource(R.xml.preferences_other);
 		addPreferencesFromResource(R.xml.preferences_about);
 	}
 	
@@ -120,7 +115,6 @@ public class GlobalFragment extends PreferenceFragment {
 		
 		setSyncEvents();
 		setTroubleshootEvents();
-		setOtherEvents();
 		setAboutEvents();
 	}
 	
@@ -154,32 +148,13 @@ public class GlobalFragment extends PreferenceFragment {
 		
 		findPreference("contact_bug").setOnPreferenceClickListener(contactListener);
 	}
-	protected void setOtherEvents() {
-		findPreference("disable_ads").setOnPreferenceChangeListener(disableAdsChange);
-	}
 	protected void setAboutEvents() {
-		findPreference("donate").setOnPreferenceClickListener(donateListener);
-		
 		String version = "";
 		try {
 			version = getPreferenceActivity().getPackageManager()
 				.getPackageInfo(getPreferenceActivity().getPackageName(), 0).versionName;
 		} catch (NameNotFoundException e1) { }
 		findPreference("version").setSummary(version);
-		
-		boolean market_installed = true;
-		try {
-			getPreferenceActivity().getPackageManager().getPackageInfo("com.android.vending", 0);
-		} catch (PackageManager.NameNotFoundException e) {
-			market_installed = false;
-		}
-		if (market_installed) {
-			Intent rate_intent = new Intent(Intent.ACTION_VIEW);
-			rate_intent.setData(Uri.parse("market://details?id=ro.weednet.contactssync"));
-			findPreference("rate_app").setIntent(rate_intent);
-		} else {
-			findPreference("rate_app").setEnabled(false);
-		}
 	}
 	
 	public void updateViews() {
@@ -439,55 +414,6 @@ public class GlobalFragment extends PreferenceFragment {
 			dialog.show();
 			
 			return true;
-		}
-	};
-	Preference.OnPreferenceClickListener donateListener = new Preference.OnPreferenceClickListener() {
-		@Override
-		public boolean onPreferenceClick(Preference preference) {
-			final Dialog dialog = new Dialog(getPreferenceActivity());
-			dialog.setContentView(R.layout.donate);
-			dialog.setTitle(getString(R.string.donate_title));
-			dialog.findViewById(R.id.gp_1_btn).setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					getPreferenceActivity().buy("donate_1");
-				}
-			});
-			dialog.findViewById(R.id.gp_2_btn).setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					getPreferenceActivity().buy("donate_2");
-				}
-			});
-			dialog.findViewById(R.id.gp_5_btn).setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					getPreferenceActivity().buy("donate_5");
-				}
-			});
-			dialog.findViewById(R.id.paypal_btn).setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					Intent donate_intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.donate_paypal_url)));
-					startActivity(donate_intent);
-					
-					dialog.dismiss();
-				}
-			});
-			dialog.show();
-			
-			return true;
-		}
-	};
-	Preference.OnPreferenceChangeListener disableAdsChange = new Preference.OnPreferenceChangeListener() {
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			try {
-				ContactsSync app = ContactsSync.getInstance();
-				app.setDisableAds((Boolean) newValue);
-				
-				((LinearLayout) getActivity().findViewById(R.id.ad_container)).setVisibility(View.GONE);
-				
-				return true;
-			} catch (Exception e) {
-				Log.d("contactsync-preferences", "error: " + e.getMessage());
-				return false;
-			}
 		}
 	};
 }
