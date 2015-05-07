@@ -1,9 +1,9 @@
-This project was discontinued!
+#This project was discontinued!
 The Facebook API v2 does NOT return the entire friend list, only the users that also have authorized this app.
 The API v1 was removed after April 30 2015, practically breaking this app.
 
 
-
+```
 Copyright (C) 2012 Danut Chereches
 
 Contact: Danut Chereches <admin@weednet.ro>
