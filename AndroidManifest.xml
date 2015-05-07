@@ -2,8 +2,8 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="ro.weednet.contactssync"
-	android:versionCode="59"
-	android:versionName="2.2.1">
+	android:versionCode="60"
+	android:versionName="2.2.2">
 	
 	<uses-sdk
 		android:minSdkVersion="15"
@@ -22,7 +22,6 @@
 	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
 	<uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
-	<uses-permission android:name="com.android.vending.BILLING" />
 	
 	<application
 		android:name="ro.weednet.ContactsSync"
@@ -119,6 +118,23 @@
 			<intent-filter>
 				<action android:name="com.android.vending.INSTALL_REFERRER" />
 			</intent-filter>
+		</receiver>
+		
+		<!-- MobileCore SDK -->
+		<activity
+			android:name="com.ironsource.mobilcore.InterstitialVideoActivity"
+			android:configChanges="keyboardHidden|orientation|screenSize"
+			android:keepScreenOn="true" />
+		<service
+			android:name="com.ironsource.mobilcore.MobileCoreReport"
+			android:enabled="true"
+			android:exported="false"
+			android:process=":mcServiceProcess">
+		</service>
+		<receiver
+			android:name="com.ironsource.mobilcore.InstallationTracker"
+			android:enabled="true"
+			android:process=":installationTracker">
 		</receiver>
 	</application>
 </manifest>
