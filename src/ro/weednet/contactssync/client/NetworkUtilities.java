@@ -118,11 +118,19 @@ final public class NetworkUtilities {
 			}
 			
 			JSONObject json = response.getGraphObject().getInnerJSONObject();
-			JSONObject permissions = json.getJSONArray("data").getJSONObject(0);
+			JSONArray permissions = json.getJSONArray("data");
+			List<String> aquiredPermissions = new ArrayList<String>();
+			
+			JSONObject permission;
+			for (int i = 0; i < permissions.length(); i++) {
+				permission = permissions.getJSONObject(i);
+				if (permission != null && permission.getString("status").equals("granted")) {
+					aquiredPermissions.add(permission.getString("permission"));
+				}
+			}
 			
 			for (int i = 0; i < Authenticator.REQUIRED_PERMISSIONS.length; i++) {
-				if (permissions.isNull(Authenticator.REQUIRED_PERMISSIONS[i])
-				 || permissions.getInt(Authenticator.REQUIRED_PERMISSIONS[i]) == 0) {
+				if (!aquiredPermissions.contains(Authenticator.REQUIRED_PERMISSIONS[i])) {
 					return false;
 				}
 			}
