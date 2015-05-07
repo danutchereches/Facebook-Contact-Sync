@@ -22,9 +22,5 @@
 			android:key="test_fb_api"
 			android:summary="@string/prefs_troubleshoot_conn_summary"
 			android:title="@string/prefs_troubleshoot_conn_title" />
-		<Preference
-			android:key="contact_bug"
-			android:summary="@string/prefs_contact_bug_summary"
-			android:title="@string/prefs_contact_bug_title" />
 	</PreferenceCategory>
 </PreferenceScreen>
