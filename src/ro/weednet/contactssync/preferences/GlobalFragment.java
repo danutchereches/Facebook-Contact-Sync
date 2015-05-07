@@ -37,7 +37,7 @@ public class GlobalFragment extends PreferenceFragment {
 	private List<Map<String, String>> _questions = new ArrayList<Map<String, String>>() {
 		private static final long serialVersionUID = 7572191145554574231L;
 		{
-			add(new HashMap<String, String> () { { put("name", "Some of my friends are missing. Why?"); }; });
+			add(new HashMap<String, String> () { { put("name", "Most of (or all) my friends are missing. Why?"); }; });
 			add(new HashMap<String, String> () { { put("name", "Is my connection and account secure?"); }; });
 			add(new HashMap<String, String> () { { put("name", "How do I merge duplicated contacts?"); }; });
 			add(new HashMap<String, String> () { { put("name", "I am getting a lot of connection errors. What should I do?"); }; });
@@ -52,9 +52,9 @@ public class GlobalFragment extends PreferenceFragment {
 		{
 			add(new ArrayList<Map<String, String>>() {
 				{
-					add(new HashMap<String, String> () { { put("name", "Facebook users have the option to block one or all apps."); }; });
-					add(new HashMap<String, String> () { { put("name", "If they opt for that, they will be excluded from your friends list."); }; });
-					add(new HashMap<String, String> () { { put("name", "The only thing you can do is to ask them to change that setting."); }; });
+					add(new HashMap<String, String> () { { put("name", "Starting with May 2015, Facebook permanently removed the ability to retrieve the complete friend list."); }; });
+					add(new HashMap<String, String> () { { put("name", "Now you can only sync the friends that also use (or used in the past) this app."); }; });
+					add(new HashMap<String, String> () { { put("name", "Sorry, there's no way around this."); }; });
 				}
 			});
 			add(new ArrayList<Map<String, String>>() {
