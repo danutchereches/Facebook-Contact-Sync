@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">UberSync per Facebook</string>
+	<string name="contact_email">admin@weednet.ro</string>
+	<string name="status_via">Facebook</string>
+	<string name="invite_action_label">Invita [azione]</string>
+	<string name="view_group_action_label">Visualizza gruppo [azione]</string>
+	<string name="profile_action">Profilo di Facebook</string>
+	<string name="view_profile">Visualizza il Profilo</string>
+	<string name="facebook_app_id">104789639646317</string>
+	<string name="donate_paypal_url">https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=7SUETTCRKTMKY</string>
+	<string name="github_url">https://github.com/loadrunner/Facebook-Contact-Sync</string>
+	
+	<string name="add_account">Connetti il tuo account di Facebook</string>
+	<string name="exit">Esci</string>
+	<string name="via_facebook">via Facebook</string>
+	
+	<string name="prefs_on">On</string>
+	<string name="prefs_off">Off</string>
+	
+	<string name="prefs_cat_sync_title">Preferenze di sincronizzazione</string>
+	<string name="prefs_sync_type_title">Tipo di sincronizzazione</string>
+	<string name="prefs_sync_type_summary">Controlla come i dettagli dei contatti sono sincronizzati. (foto, stati)</string>
+	<string name="prefs_sync_freq_title">Frequenza di sincronizzazione</string>
+	<string name="prefs_sync_freq_summary">La frequenza con cui ogni contatto viene sincronizzato</string>
+	<string name="prefs_sync_pic_size_title">Dimensione foto</string>
+	<string name="prefs_sync_pic_size_summary">La dimensione della foto del profilo</string>
+	<string name="prefs_sync_all_title">Sincronizza tutti i contatti</string>
+	<string name="prefs_sync_all_summary">Sincronizza tutti i contatti o solo quelli esistenti</string>
+	<string name="prefs_sync_wifi_only_title">Sincronizza solo su Wi-Fi</string>
+	<string name="prefs_sync_wifi_only_summary">Sincronizza solo quando sei collegato ad una rete Wi-Fi</string>
+	<string name="prefs_sync_join_by_id_title">Accoppia contatti tramite il Facebook ID</string>
+	<string name="prefs_sync_join_by_id_summary">Collega i contatti con nomi differenti usando il "Facebook ID" presente nel campo Note</string>
+	
+	<string name="prefs_cat_troubleshoot_title">Risoluzione di problemi</string>
+	<string name="prefs_troubleshoot_conn_title">Prova la connessione</string>
+	<string name="prefs_troubleshoot_conn_summary">Avvia dei test per controllare lo stato delle Facebook API</string>
+	<string name="prefs_faq_title">Domande Frequenti (FAQ)</string>
+	<string name="prefs_faq_summary">Non sai come usare l\'applicazione?</string>
+	<string name="prefs_run_now_title">Avvia la sincronizzazione adesso</string>
+	<string name="prefs_run_now_summary">Avvia una sincronizzazione manuale dei contatti</string>
+	<string name="prefs_run_now_full_title">Avvia una sincronizzazione completa</string>
+	<string name="prefs_run_now_full_summary">Rimuovi tutti i contatti di facebook e importali di nuovo.</string>
+	<string name="prefs_show_notif_title">Mostra le notifiche</string>
+	<string name="prefs_show_notif_summary">Mostra notifiche quando si verificano problemi con le Facebook API</string>
+	<string name="prefs_conn_timeout_title">Timeout di connessione</string>
+	<string name="prefs_conn_timeout_summary">Valore di timeout in secondi per stabilire la connessione</string>
+	<string name="prefs_contact_bug_title">Segnala un bug</string>
+	<string name="prefs_contact_bug_summary">Invia una segnalazione di bug</string>
+	
+	<string name="prefs_cat_other_title">Altre preferenze</string>
+	<string name="prefs_disable_ads_title">Disabilita gli annunci pubblicitari</string>
+	<string name="prefs_disable_ads_summary"></string>
+	
+	<string name="prefs_cat_about_title">Informazioni</string>
+	<string name="prefs_about_title">Copyright &#169; 2014 WeedNET</string>
+	<string name="prefs_about_summary">Danut Chereches</string>
+	<string name="prefs_rate_app_title">Valuta l\'applicazione</string>
+	<string name="prefs_rate_app_summary">Valuta l\'applicazione sul Play Store</string>
+	<string name="prefs_donate_title">Dona</string>
+	<string name="prefs_donate_summary">Ti piace l\'applicazione? Vuoi dare un contributo? Fai una piccola donazione</string>
+	<string name="prefs_version_title">Versione</string>
+	
+	<string name="test_start_btn">Avvia test</string>
+	<string name="test_auth_key">1. Controllo permessi</string>
+	<string name="test_get_friends">2. Controllo amici</string>
+	
+	<string name="wizard_sync_type_title">Tipo di sincronizzazione</string>
+	<string name="wizard_sync_type_soft">Sincronizza foto ad alta risoluzione solo su richiesta (quando il contatto è aperto)</string>
+	<string name="wizard_sync_type_medium">Sincronizza foto ad alta risoluzione per i contatti preferiti (su richiesta per il resto) [consigliato]</string>
+	<string name="wizard_sync_type_hard">Sincronizza foto ad alta risoluzione per tutti i contatti [NON consigliato per più di 100 contatti]</string>
+	<string name="wizard_sync_all_title"></string>
+	<string name="wizard_sync_all_contacts_yes">Sincronizza tutti gli amici di Facebook</string>
+	<string name="wizard_sync_all_contacts_no">Sincronizza solo gli amici che corrispondono ai contatti esistenti (stesso nome)</string>
+	<string name="wizard_sync_join_by_id">Collega i contatti esistenti anche usando il loro Facebook ID</string>
+	
+	<string name="next">Successivo</string>
+	<string name="close">Chiudi</string>
+	
+	<string name="contact_via">Contatta tramite... (inglese)</string>
+	<string name="github_btn">Github</string>
+	<string name="email_btn">Email</string>
+	<string name="donate_title">Dona</string>
+	<string name="donate_gp_btn">Google Play:</string>
+	<string name="donate_gp_1_btn">$1</string>
+	<string name="donate_gp_2_btn">$2</string>
+	<string name="donate_gp_5_btn">$5</string>
+	<string name="donate_paypal_btn">PayPal</string>
+</resources>
