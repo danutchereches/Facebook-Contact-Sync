@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="prefs_sync_type_entries">
+		<item>Yumuşak [hızlı]\n  gereksinim olduğunda detayları eşle</item>
+		<item>Orta [önerilen]\n  sık iletişim kurulanların detaylarını daima eşle</item>
+		<item>Zorlu [sadece 100'den az kişi için]\n  bütün kişiler için bütün detayları eşle</item>
+		<item>Miras [önerilMEyen]\n  bir seferde tüm kişileri eşlemeyi dener ve "gereksinimi" devre dışı bırakır</item>
+	</string-array>
+	<string-array name="prefs_sync_type_entry_values">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+	</string-array>
+	<string-array name="prefs_sync_freq_entries">
+		<item>Devre dışı</item>
+		<item>1 Saat</item>
+		<item>3 Saat</item>
+		<item>6 Saat</item>
+		<item>12 Saat</item>
+		<item>1 Gün</item>
+		<item>2 Gün</item>
+		<item>4 Gün</item>
+		<item>1 Hafta</item>
+		<item>2 Hafta</item>
+		<item>1 Ay</item>
+	</string-array>
+	<string-array name="prefs_sync_freq_entry_values">
+		<item>0</item>
+		<item>1</item>
+		<item>3</item>
+		<item>6</item>
+		<item>12</item>
+		<item>24</item>
+		<item>48</item>
+		<item>96</item>
+		<item>168</item>
+		<item>336</item>
+		<item>720</item>
+	</string-array>
+	<string-array name="prefs_pic_size_entries">
+		<item>En fazla desteklenen</item>
+		<item>En fazla desteklenen (kırpılmış)</item>
+		<item>Küçük kare (50x50)</item>
+		<item>Küçük (en fazla 50x150)</item>
+		<item>Normal (en fazla 100x300)</item>
+		<item>Büyük (en fazla 200x600)</item>
+		<item>Kare (256x256 kırpılmış)</item>
+		<item>Büyük kare (512x512 kırpılmış)</item>
+		<item>Çok büyük kare (720x720 kırpılmış)</item>
+	</string-array>
+	<string-array name="prefs_pic_size_entry_values">
+		<item>7</item>
+		<item>8</item>
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+		<item>4</item>
+		<item>5</item>
+		<item>6</item>
+	</string-array>
+</resources>
