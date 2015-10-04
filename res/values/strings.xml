@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">UberSync for Facebook</string>
+	<string name="app_name">UberSync</string>
 	<string name="contact_email">admin@weednet.ro</string>
 	<string name="status_via">Facebook</string>
 	<string name="invite_action_label">Invite [action]</string>
