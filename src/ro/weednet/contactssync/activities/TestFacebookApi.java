@@ -135,7 +135,7 @@ public class TestFacebookApi extends Activity {
 									AccountManager am = AccountManager.get(TestFacebookApi.this);
 									Account account = ContactsSync.getInstance().getAccount();
 									String authToken = am.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, true);
-									Log.v("TestFB", "token: " + authToken);
+									
 									NetworkUtilities nu = new NetworkUtilities(authToken, TestFacebookApi.this);
 									if (nu.checkAccessToken()) {
 										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(true, "OK"), System.currentTimeMillis() - start_time);
