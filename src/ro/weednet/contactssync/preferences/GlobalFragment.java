@@ -344,7 +344,7 @@ public class GlobalFragment extends PreferenceFragment {
 			
 			ContentResolver.requestSync(mAccount, ContactsContract.AUTHORITY, new Bundle());
 			
-			Toast toast = Toast.makeText(getActivity(), "Sync started .. ", Toast.LENGTH_LONG);
+			Toast toast = Toast.makeText(getActivity(), "Sync command sent .. ", Toast.LENGTH_LONG);
 			toast.show();
 			
 			return true;
@@ -376,7 +376,7 @@ public class GlobalFragment extends PreferenceFragment {
 						app.requestFullSync();
 						ContentResolver.requestSync(mAccount, ContactsContract.AUTHORITY, new Bundle());
 						
-						Toast toast = Toast.makeText(getActivity(), "Full Sync started .. ", Toast.LENGTH_LONG);
+						Toast toast = Toast.makeText(getActivity(), "Full Sync command sent .. ", Toast.LENGTH_LONG);
 						toast.show();
 					}
 				})
