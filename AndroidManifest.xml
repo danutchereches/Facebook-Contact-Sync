@@ -2,8 +2,8 @@
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	package="ro.weednet.contactssync"
-	android:versionCode="61"
-	android:versionName="6.6.6">
+	android:versionCode="62"
+	android:versionName="6.6.7">
 	
 	<uses-sdk
 		android:minSdkVersion="15"
