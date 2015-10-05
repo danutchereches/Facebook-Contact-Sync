@@ -214,7 +214,7 @@ public class TestFacebookApi extends Activity {
 									NetworkUtilities nu = new NetworkUtilities(authToken, TestFacebookApi.this);
 									List<RawContact> contacts = nu.getContacts(account);
 									if (contacts != null) {
-										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(true, "Found " + contacts.size() + " friends"), System.currentTimeMillis() - start_time);
+										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(true, "Found " + contacts.size() + (contacts.size() == 1 ? " friend" : " friends")), System.currentTimeMillis() - start_time);
 									} else {
 										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(false, "Invalid response from facebook"), 0L);
 									}
