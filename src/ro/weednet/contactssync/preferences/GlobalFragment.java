@@ -41,7 +41,7 @@ public class GlobalFragment extends PreferenceFragment {
 	private List<Map<String, String>> _questions = new ArrayList<Map<String, String>>() {
 		private static final long serialVersionUID = 7572191145554574231L;
 		{
-			add(new HashMap<String, String> () { { put("name", "Some of my friends are missing. Why?"); }; });
+			add(new HashMap<String, String> () { { put("name", "Some (or most) of my friends are missing. Why?"); }; });
 			add(new HashMap<String, String> () { { put("name", "Is my connection and account secure?"); }; });
 			add(new HashMap<String, String> () { { put("name", "How do I merge duplicated contacts?"); }; });
 			add(new HashMap<String, String> () { { put("name", "I am getting a lot of connection errors. What should I do?"); }; });
@@ -56,9 +56,9 @@ public class GlobalFragment extends PreferenceFragment {
 		{
 			add(new ArrayList<Map<String, String>>() {
 				{
-					add(new HashMap<String, String> () { { put("name", "Facebook users have the option to block one or all apps."); }; });
-					add(new HashMap<String, String> () { { put("name", "If they opt for that, they will be excluded from your friends list."); }; });
-					add(new HashMap<String, String> () { { put("name", "The only thing you can do is to ask them to change that setting."); }; });
+					add(new HashMap<String, String> () { { put("name", "Starting with Facebook API v2.0, the friend list includes only users that authorized this app."); }; });
+					add(new HashMap<String, String> () { { put("name", "If you want to sync the pictures of people who did not (and most didn't), the only way is to use the Invite button and ask them to authorize it."); }; });
+					add(new HashMap<String, String> () { { put("name", "No trick and no way around it. Really! They don't need to use the actual Android app, just to grant the authorization to get their picture."); }; });
 				}
 			});
 			add(new ArrayList<Map<String, String>>() {
