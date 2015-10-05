@@ -30,6 +30,9 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -43,6 +46,7 @@ public class Invite extends Activity {
 	public final Handler mHandler = new Handler();
 	private CallbackManager mCallbackManager;
 	protected ProgressDialog mLoading;
+	private Tracker mTracker;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -64,6 +68,11 @@ public class Invite extends Activity {
 				});
 			}
 		});
+		
+		mTracker = GoogleAnalytics.getInstance(this).newTracker("UA-3393187-13");
+		mTracker.enableAdvertisingIdCollection(true);
+		mTracker.setScreenName("invite");
+		mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 		
 		final String appLinkUrl = "https://fb.me/471741669617777";
 		final String previewImageUrl = "https://contact-sync.weednet.ro/images/icon.png";

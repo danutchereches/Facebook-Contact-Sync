@@ -215,6 +215,8 @@ public class Preferences extends Activity {
 			mDialog.findViewById(R.id.invite).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					mTracker.send(new HitBuilders.EventBuilder("click", "invite").build());
+					
 					mDialog.findViewById(R.id.next).callOnClick();
 					
 					Intent intent = new Intent(Preferences.this, Invite.class);
