@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/prefs_cat_sync_title" >
 		<ListPreference
-			android:defaultValue="1"
+			android:defaultValue="2"
 			android:entries="@array/prefs_sync_type_entries"
 			android:entryValues="@array/prefs_sync_type_entry_values"
 			android:key="sync_type"
@@ -23,7 +23,7 @@
 			android:summary="@string/prefs_sync_pic_size_summary"
 			android:title="@string/prefs_sync_pic_size_title" />
 		<CheckBoxPreference
-			android:defaultValue="false"
+			android:defaultValue="true"
 			android:key="sync_all"
 			android:summary="@string/prefs_sync_all_summary"
 			android:title="@string/prefs_sync_all_title" />

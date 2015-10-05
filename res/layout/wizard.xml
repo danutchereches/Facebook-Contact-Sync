@@ -16,7 +16,7 @@
 			android:layout_height="wrap_content"
 			android:padding="16dp"
 			android:orientation="vertical"
-			android:checkedButton="@+id/wizard_sync_type_medium">
+			android:checkedButton="@+id/wizard_sync_type_hard">
 			<RadioButton
 				android:id="@+id/wizard_sync_type_soft"
 				android:layout_width="wrap_content"
@@ -53,7 +53,7 @@
 			android:paddingBottom="16dp"
 			android:layout_gravity="center"
 			android:orientation="vertical"
-			android:checkedButton="@+id/wizard_sync_all_contacts_no">
+			android:checkedButton="@+id/wizard_sync_all_contacts_yes">
 			<RadioButton
 				android:id="@+id/wizard_sync_all_contacts_yes"
 				android:layout_width="wrap_content"
@@ -73,6 +73,28 @@
 			android:layout_height="wrap_content"
 			android:textSize="16sp"
 			android:text="@string/wizard_sync_join_by_id" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/page3"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:visibility="gone">
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/wizard_invite_text" />
+		<Button
+			android:id="@+id/invite"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:drawableLeft="@drawable/com_facebook_button_icon"
+			android:background="@drawable/com_facebook_button_background"
+			android:layout_marginTop="5dp"
+			android:paddingLeft="20dp"
+			android:paddingRight="20dp"
+			android:text="Invite" />
 	</LinearLayout>
 	<Button
 		android:id="@+id/next"

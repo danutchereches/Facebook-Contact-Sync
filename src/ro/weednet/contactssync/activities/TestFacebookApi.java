@@ -135,7 +135,7 @@ public class TestFacebookApi extends Activity {
 									AccountManager am = AccountManager.get(TestFacebookApi.this);
 									Account account = ContactsSync.getInstance().getAccount();
 									String authToken = am.blockingGetAuthToken(account, Constants.AUTHTOKEN_TYPE, true);
-									Log.v("TestFB", "token: " + authToken);
+									
 									NetworkUtilities nu = new NetworkUtilities(authToken, TestFacebookApi.this);
 									if (nu.checkAccessToken()) {
 										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(true, "OK"), System.currentTimeMillis() - start_time);
@@ -214,7 +214,7 @@ public class TestFacebookApi extends Activity {
 									NetworkUtilities nu = new NetworkUtilities(authToken, TestFacebookApi.this);
 									List<RawContact> contacts = nu.getContacts(account);
 									if (contacts != null) {
-										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(true, "Found " + contacts.size() + " friends"), System.currentTimeMillis() - start_time);
+										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(true, "Found " + contacts.size() + (contacts.size() == 1 ? " friend" : " friends")), System.currentTimeMillis() - start_time);
 									} else {
 										return new Pair<Pair<Boolean, String>, Long>(new Pair<Boolean, String>(false, "Invalid response from facebook"), 0L);
 									}

@@ -72,10 +72,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class Preferences extends Activity {
-	public final static ContactsSync.SyncType DEFAULT_SYNC_TYPE = ContactsSync.SyncType.MEDIUM;
+	public final static ContactsSync.SyncType DEFAULT_SYNC_TYPE = ContactsSync.SyncType.HARD;
 	public final static int DEFAULT_SYNC_FREQUENCY = 24;//hours
 	public final static int DEFAULT_PICTURE_SIZE = RawContact.IMAGE_SIZES.MAX_SQUARE;
-	public final static boolean DEFAULT_SYNC_ALL = false;
+	public final static boolean DEFAULT_SYNC_ALL = true;
 	public final static boolean DEFAULT_SYNC_WIFI_ONLY = false;
 	public final static boolean DEFAULT_JOIN_BY_ID = false;
 	public final static boolean DEFAULT_SHOW_NOTIFICATIONS = false;
@@ -212,14 +212,29 @@ public class Preferences extends Activity {
 			mDialog = new Dialog(this);
 			mDialog.setContentView(R.layout.wizard);
 			mDialog.setTitle("Select option");
+			mDialog.findViewById(R.id.invite).setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mDialog.findViewById(R.id.next).callOnClick();
+					
+					Intent intent = new Intent(Preferences.this, Invite.class);
+					startActivity(intent);
+				}
+			});
 			mDialog.findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (mDialog.findViewById(R.id.page1).getVisibility() == View.VISIBLE) {
 						mDialog.findViewById(R.id.page1).setVisibility(View.GONE);
 						mDialog.findViewById(R.id.page2).setVisibility(View.VISIBLE);
+						mDialog.findViewById(R.id.page3).setVisibility(View.GONE);
 						((TextView) mDialog.findViewById(R.id.next)).setText(getString(R.string.close));
 					} else if (mDialog.findViewById(R.id.page2).getVisibility() == View.VISIBLE) {
+						mDialog.findViewById(R.id.page1).setVisibility(View.GONE);
+						mDialog.findViewById(R.id.page2).setVisibility(View.GONE);
+						mDialog.findViewById(R.id.page3).setVisibility(View.VISIBLE);
+						((TextView) mDialog.findViewById(R.id.next)).setText(getString(R.string.close));
+					} else if (mDialog.findViewById(R.id.page3).getVisibility() == View.VISIBLE) {
 						
 						if (((RadioButton) mDialog.findViewById(R.id.wizard_sync_type_soft)).isChecked()) {
 							app.setSyncType(SyncType.SOFT);
@@ -240,31 +255,37 @@ public class Preferences extends Activity {
 						ContentResolver.addPeriodicSync(mAccount, ContactsContract.AUTHORITY, extras, DEFAULT_SYNC_FREQUENCY * 3600);
 						mDialog.dismiss();
 						
-						updateStatusMessage(0);
+						init();
 						mFragment.updateViews();
 					}
 				}
 			});
 			mDialog.show();
 		} else {
-			mFragment.setAccount(mAccount);
-			//TODO: check logic
-			if (ContentResolver.getSyncAutomatically(mAccount, ContactsContract.AUTHORITY)) {
-				if (app.getSyncFrequency() == 0) {
-					app.setSyncFrequency(Preferences.DEFAULT_SYNC_FREQUENCY);
-					app.savePreferences();
-					ContentResolver.addPeriodicSync(mAccount, ContactsContract.AUTHORITY, new Bundle(), Preferences.DEFAULT_SYNC_FREQUENCY * 3600);
-				}
-			} else {
-				if (app.getSyncFrequency() > 0) {
-					app.setSyncFrequency(0);
-					app.savePreferences();
-				}
-			}
-			updateStatusMessage(0);
-			final int mask = ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE | ContentResolver.SYNC_OBSERVER_TYPE_PENDING;
-			mSyncObserverHandler = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
+			init();
 		}
+	}
+	
+	
+	private void init() {
+		final ContactsSync app = ContactsSync.getInstance();
+		mFragment.setAccount(mAccount);
+		//TODO: check logic
+		if (ContentResolver.getSyncAutomatically(mAccount, ContactsContract.AUTHORITY)) {
+			if (app.getSyncFrequency() == 0) {
+				app.setSyncFrequency(Preferences.DEFAULT_SYNC_FREQUENCY);
+				app.savePreferences();
+				ContentResolver.addPeriodicSync(mAccount, ContactsContract.AUTHORITY, new Bundle(), Preferences.DEFAULT_SYNC_FREQUENCY * 3600);
+			}
+		} else {
+			if (app.getSyncFrequency() > 0) {
+				app.setSyncFrequency(0);
+				app.savePreferences();
+			}
+		}
+		updateStatusMessage(0);
+		final int mask = ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE | ContentResolver.SYNC_OBSERVER_TYPE_PENDING;
+		mSyncObserverHandler = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
 	}
 	
 	@Override

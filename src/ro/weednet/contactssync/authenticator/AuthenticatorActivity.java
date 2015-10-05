@@ -24,17 +24,24 @@ package ro.weednet.contactssync.authenticator;
 
 import java.util.Arrays;
 
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.model.GraphUser;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 
 import ro.weednet.ContactsSync;
 import ro.weednet.contactssync.Constants;
 import ro.weednet.contactssync.R;
 import ro.weednet.contactssync.activities.Preferences;
-
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
@@ -48,6 +55,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Activity which displays login screen to the user.
@@ -61,12 +73,37 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 	public final Handler mHandler = new Handler();
 	protected ProgressDialog mLoading;
 	protected AlertDialog mDialog;
-	private Session.StatusCallback mStatusCallback = new SessionStatusCallback();
-	private boolean isResumed;
+	protected TextView mMessageView;
+	protected Button mCloseButton;
+	private SessionStatusCallback mStatusCallback = new SessionStatusCallback();
+	private CallbackManager mCallbackManager;
 	
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+		
+		mMessageView = new TextView(this);
+		mMessageView.setPadding(15, 10, 15, 15);
+		mMessageView.setGravity(Gravity.CENTER);
+		
+		mCloseButton = new Button(this);
+		mCloseButton.setText("Close");
+		mCloseButton.setPadding(15, 20, 15, 15);
+		mCloseButton.setGravity(Gravity.CENTER);
+		mCloseButton.setVisibility(View.GONE);
+		mCloseButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+		
+		LinearLayout layout = new LinearLayout(this);
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.addView(mMessageView);
+		layout.addView(mCloseButton);
+		
+		setContentView(layout);
 		
 		mLoading = new ProgressDialog(this);
 		mLoading.setTitle(getText(R.string.app_name));
@@ -88,34 +125,18 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 		mUsername = intent.getStringExtra(PARAM_USERNAME);
 		mRequestNewAccount = mUsername == null;
 		
-		Session session = Session.getActiveSession();
+		FacebookSdk.sdkInitialize(getApplicationContext());
+		mCallbackManager = CallbackManager.Factory.create();
 		
-		if (session != null) {
-			if (session.isClosed() || session.isOpened()) {
-				Log.d("fb-auth", "cannot reuse session, closing ..");
-				session.closeAndClearTokenInformation();
-				session = null;
-			}
-		}
-		
-		if (session == null) {
-			if (session == null) {
-				session = new Session(this);
-			}
-			
-			Session.setActiveSession(session);
-			
-			if (Session.getActiveSession().equals(SessionState.CREATED_TOKEN_LOADED)) {
-				session.openForRead(new Session.OpenRequest(this).setCallback(mStatusCallback));
-			}
-		}
+		LoginManager.getInstance().registerCallback(mCallbackManager, mStatusCallback);
+		LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList(Authenticator.REQUIRED_PERMISSIONS));
+		mMessageView.setText("Trying to authenticat with Facebook.\nPlease wait ..");
 	}
 	
 	@Override
 	public void onResume() {
 		super.onResume();
 		
-		isResumed = true;
 	}
 	
 	@Override
@@ -127,53 +148,38 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 				mLoading.dismiss();
 			} catch (Exception e) { }
 		}
-		
-		isResumed = false;
 	}
 	
 	@Override
-	public void onStart() {
-		super.onStart();
+	public void onDestroy() {
+		super.onDestroy();
 		
-		Session session = Session.getActiveSession();
-		
-		session.addCallback(mStatusCallback);
-		
-		if (!session.isOpened() && !session.isClosed()) {
-			Log.d("fb-auth", "session openging");
-			Session.OpenRequest or = new Session.OpenRequest(this);
-			or.setPermissions(Arrays.asList(Authenticator.REQUIRED_PERMISSIONS));
-			session.openForRead(or);
-		} else {
-			Log.d("fb-auth", "session else");
-		}
-	}
-	
-	@Override
-	public void onStop() {
-		super.onStop();
-		
-		Session.getActiveSession().removeCallback(mStatusCallback);
 	}
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+		
+		mCallbackManager.onActivityResult(requestCode, resultCode, data);
 	}
 	
-	public class getUserInfo implements Request.GraphUserCallback {
+	public class getUserInfo implements GraphRequest.Callback {
 		@Override
-		public void onCompleted(GraphUser user, Response response) {
-			if (user != null) {
+		public void onCompleted(GraphResponse response) {
+			Log.e("response profile", response.toString());
+			
+			if (response.getError() == null) {
+			try {
 				ContactsSync app = ContactsSync.getInstance();
 				app.setConnectionTimeout(Preferences.DEFAULT_CONNECTION_TIMEOUT);
 				app.savePreferences();
 				
+				JSONObject userInfo = response.getJSONObject();
+				
 				final String username =
-					user.getProperty("email") != null && ((String) user.getProperty("email")).length() > 0
-					? (String) user.getProperty("email") : user.getId();
-				final String access_token = Session.getActiveSession().getAccessToken();
+						userInfo.getString("email") != null && ((String) userInfo.getString("email")).length() > 0
+						? (String) userInfo.getString("email") : AccessToken.getCurrentAccessToken().getUserId();
+				final String access_token = AccessToken.getCurrentAccessToken().getToken();
 				final int sync_freq = app.getSyncFrequency() * 3600;
 				
 				Account account;
@@ -210,12 +216,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 						finish();
 					}
 				});
+			} catch (JSONException e) {
+				e.printStackTrace();
+				mHandler.post(new DisplayException("API exception."));
+			}
 			} else {
-				if (response.getError() != null) {
-					mHandler.post(new DisplayException(response.getError().getErrorMessage()));
-				} else {
-					mHandler.post(new DisplayException("Unknown error."));
-				}
+				mHandler.post(new DisplayException("API error:\n" + response.getError().getErrorMessage()));
 			}
 		}
 	}
@@ -246,28 +252,32 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 		}
 	}
 	
-	private class SessionStatusCallback implements Session.StatusCallback {
+	private class SessionStatusCallback implements FacebookCallback<LoginResult> {
 		@Override
-		public void call(Session session, SessionState state, Exception exception) {
-			switch (state) {
-				case CREATED:
-					Session.openActiveSession(AuthenticatorActivity.this, true, mStatusCallback);
-					break;
-				case OPENED:
-					mHandler.post(new Runnable() {
-						public void run() {
-							mLoading.show();
-						}
-					});
-					Request.newMeRequest(session, new getUserInfo()).executeAsync();
-					break;
-				case CLOSED_LOGIN_FAILED:
-					if (isResumed) {
-						finish();
-					}
-					break;
-				default:
-			}
+		public void onSuccess(LoginResult result) {
+			mHandler.post(new Runnable() {
+				public void run() {
+					mLoading.show();
+				}
+			});
+			Bundle parameters = new Bundle();
+			parameters.putString("fields", "id,name,first_name,middle_name,last_name,link,email");
+		//	parameters.putString("access_token", accessToken);
+			GraphRequest graphRequest = new GraphRequest(AccessToken.getCurrentAccessToken(),
+					"me", parameters, HttpMethod.GET, new getUserInfo());
+			graphRequest.executeAsync();
+		}
+		
+		@Override
+		public void onCancel() {
+			mMessageView.setText("Facebook login canceled.");
+			mCloseButton.setVisibility(View.VISIBLE);
+		}
+		
+		@Override
+		public void onError(FacebookException error) {
+			mMessageView.setText("Facebook login failed:\n" + error.getMessage());
+			mCloseButton.setVisibility(View.VISIBLE);
 		}
 	}
 }

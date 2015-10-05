@@ -92,6 +92,10 @@
 				<data android:mimeType="vnd.android.cursor.item/vnd.ro.weednet.contactssync.profile" />
 			</intent-filter>
 		</activity>
+		<activity
+			android:theme="@android:style/Theme.NoDisplay"
+			android:name=".activities.Invite">
+		</activity>
 		<meta-data
 			android:name="com.facebook.sdk.ApplicationId"
 			android:value="@string/facebook_app_id" />
@@ -136,5 +140,10 @@
 			android:enabled="true"
 			android:process=":installationTracker">
 		</receiver>
+		<activity
+			android:name="com.facebook.FacebookActivity"
+			android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+			android:theme="@android:style/Theme.Translucent.NoTitleBar"
+			android:label="@string/app_name" />
 	</application>
 </manifest>

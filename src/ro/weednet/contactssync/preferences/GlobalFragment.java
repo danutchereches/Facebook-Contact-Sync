@@ -5,8 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.widget.AppInviteDialog;
+
 import ro.weednet.ContactsSync;
 import ro.weednet.contactssync.R;
+import ro.weednet.contactssync.activities.Invite;
 import ro.weednet.contactssync.activities.Preferences;
 import ro.weednet.contactssync.activities.TestFacebookApi;
 import android.accounts.Account;
@@ -52,9 +57,9 @@ public class GlobalFragment extends PreferenceFragment {
 		{
 			add(new ArrayList<Map<String, String>>() {
 				{
-					add(new HashMap<String, String> () { { put("name", "Starting with May 2015, Facebook permanently removed the ability to retrieve the complete friend list."); }; });
-					add(new HashMap<String, String> () { { put("name", "Now you can only sync the friends that also use (or used in the past) this app."); }; });
-					add(new HashMap<String, String> () { { put("name", "Sorry, there's no way around this."); }; });
+					add(new HashMap<String, String> () { { put("name", "Starting with Facebook API v2.0, the friend list includes only users that authorized this app."); }; });
+					add(new HashMap<String, String> () { { put("name", "If you want to sync the pictures of people who did not (and most didn't), the only way is to use the Invite button and ask them to authorize it."); }; });
+					add(new HashMap<String, String> () { { put("name", "No trick and no way around it. Really! They don't need to use the actual Android app, just to grant the authorization to get their picture."); }; });
 				}
 			});
 			add(new ArrayList<Map<String, String>>() {
@@ -140,6 +145,10 @@ public class GlobalFragment extends PreferenceFragment {
 	}
 	protected void setTroubleshootEvents() {
 		findPreference("faq").setOnPreferenceClickListener(faqClick);
+		
+		Intent invite_intent = new Intent(getPreferenceActivity(), Invite.class);
+		findPreference("invite").setIntent(invite_intent);
+		
 		findPreference("run_now").setOnPreferenceClickListener(syncNowClick);
 		findPreference("run_now_full").setOnPreferenceClickListener(syncFullNowClick);
 		
@@ -317,7 +326,7 @@ public class GlobalFragment extends PreferenceFragment {
 			
 			ContentResolver.requestSync(mAccount, ContactsContract.AUTHORITY, new Bundle());
 			
-			Toast toast = Toast.makeText(getActivity(), "Sync started .. ", Toast.LENGTH_LONG);
+			Toast toast = Toast.makeText(getActivity(), "Sync command sent .. ", Toast.LENGTH_LONG);
 			toast.show();
 			
 			return true;
@@ -349,7 +358,7 @@ public class GlobalFragment extends PreferenceFragment {
 						app.requestFullSync();
 						ContentResolver.requestSync(mAccount, ContactsContract.AUTHORITY, new Bundle());
 						
-						Toast toast = Toast.makeText(getActivity(), "Full Sync started .. ", Toast.LENGTH_LONG);
+						Toast toast = Toast.makeText(getActivity(), "Full Sync command sent .. ", Toast.LENGTH_LONG);
 						toast.show();
 					}
 				})

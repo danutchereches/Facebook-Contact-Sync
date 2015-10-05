@@ -33,12 +33,13 @@ import ro.weednet.contactssync.authenticator.Authenticator;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.Session.StatusCallback;
-import com.facebook.SessionState;
+import com.facebook.LoggingBehavior;
+import com.facebook.GraphResponse.PagingDirection;
+import com.facebook.internal.Utility;
 
 import android.accounts.Account;
 import android.accounts.NetworkErrorException;
@@ -65,25 +66,15 @@ import java.util.Locale;
  * Provides utility methods for communicating with the server.
  */
 final public class NetworkUtilities {
-	private Session mSession;
+	private String mAccessToken;
 	
 	public NetworkUtilities(String token, Context context) {
 		if (Looper.myLooper() == null) {
 			Looper.prepare();
 		}
 		
-		AccessToken accessToken = AccessToken.createFromExistingAccessToken(token, null, null, null, null);
-		mSession = Session.getActiveSession();
-		if (mSession == null) {
-			mSession = Session.openActiveSessionWithAccessToken(context, accessToken,
-				new StatusCallback() {
-				
-				@Override
-				public void call(Session session, SessionState state, Exception exception) {
-					
-				}
-			});
-		}
+		FacebookSdk.sdkInitialize(context);
+		mAccessToken = token;
 	}
 	
 	/**
@@ -101,13 +92,12 @@ final public class NetworkUtilities {
 		//TODO: try to re-use timeout values (or remove preferences options
 		//	params.putInt("timeout", ContactsSync.getInstance().getConnectionTimeout() * 1000);
 		
-		if (!mSession.isOpened()) {
-			return false;
-		}
-		
 		try {
-			Request request = new Request(mSession, "me/permissions");
-			Response response = request.executeAndWait();
+			Bundle parameters = new Bundle();
+			parameters.putString("access_token", mAccessToken);
+			parameters.putString("fields", "permission,status");
+			GraphRequest graphRequest = new GraphRequest(null, "me/permissions", parameters, HttpMethod.GET, null);
+			GraphResponse response = graphRequest.executeAndWait();
 			
 			if (response.getError() != null) {
 				if (response.getError().getErrorCode() == 190) {
@@ -117,7 +107,7 @@ final public class NetworkUtilities {
 				}
 			}
 			
-			JSONObject json = response.getGraphObject().getInnerJSONObject();
+			JSONObject json = response.getJSONObject();
 			JSONArray permissions = json.getJSONArray("data");
 			List<String> aquiredPermissions = new ArrayList<String>();
 			
@@ -149,118 +139,45 @@ final public class NetworkUtilities {
 		
 		final ArrayList<RawContact> serverList = new ArrayList<RawContact>();
 		ContactsSync app = ContactsSync.getInstance();
-		int pictureSize = app.getPictureSize();
-		String pic_size = null;
-		boolean album_picture = false;
 		
-		if (app.getSyncType() == ContactsSync.SyncType.LEGACY) {
-			switch (pictureSize) {
-				case RawContact.IMAGE_SIZES.SMALL_SQUARE:
-					pic_size = "pic_square";
-					break;
-				case RawContact.IMAGE_SIZES.SMALL:
-					pic_size = "pic_small";
-					break;
-				case RawContact.IMAGE_SIZES.NORMAL:
-					pic_size = "pic";
-					break;
-				case RawContact.IMAGE_SIZES.SQUARE:
-				case RawContact.IMAGE_SIZES.BIG_SQUARE:
-				case RawContact.IMAGE_SIZES.HUGE_SQUARE:
-				case RawContact.IMAGE_SIZES.MAX:
-				case RawContact.IMAGE_SIZES.MAX_SQUARE:
-					album_picture = true;
-				case RawContact.IMAGE_SIZES.BIG:
-					pic_size = "pic_big";
-					break;
-			}
-		} else {
-			pic_size = "pic";
-			album_picture = false;
-		}
+		Bundle parameters = new Bundle();
+		parameters.putString("access_token", mAccessToken);
+		parameters.putString("fields", "id,first_name,last_name,picture");
+		GraphRequest friendlistRequest = new GraphRequest(null, "me/friends", parameters, HttpMethod.GET, null);
+		GraphResponse response;
 		
-		String fields = "uid, first_name, last_name, " + pic_size;
-		
-		boolean more = true;
-		int limit;
-		int offset = 0;
-		while (more) {
-			more = false;
-			Bundle params = new Bundle();
+		do {
+			response = friendlistRequest.executeAndWait();
+			friendlistRequest = null;
 			
-			if (album_picture) {
-				limit = 20;
-				String query1 = "SELECT " + fields + " FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me()) LIMIT " + limit + " OFFSET " + offset;
-				String query2 = "SELECT owner, src_big, modified FROM photo WHERE pid IN (SELECT cover_pid FROM album WHERE owner IN (SELECT uid FROM #query1) AND type = 'profile')";
-				params.putString("method", "fql.multiquery");
-				params.putString("queries", "{\"query1\":\"" + query1 + "\", \"query2\":\"" + query2 + "\"}");
-				params.putString("locale", getDefaultLocale());
-			} else {
-				limit = 1000;
-				String query = "SELECT " + fields + " FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me()) LIMIT " + limit + " OFFSET " + offset;
-				params.putString("method", "fql.query");
-				params.putString("query", query);
-				params.putString("locale", getDefaultLocale());
-			}
-			
-			params.putInt("timeout", app.getConnectionTimeout() * 1000);
-			Request request = Request.newRestRequest(mSession, "fql.query", params, HttpMethod.GET);
-			Response response = request.executeAndWait();
-			
-			if (response == null) {
-				throw new IOException();
-			}
-			if (response.getGraphObjectList() == null) {
-				if (response.getError() != null) {
-					if (response.getError().getErrorCode() == 190) {
-						throw new AuthenticationException();
-					} else {
-						throw new ParseException(response.getError().getErrorMessage());
-					}
+			if (response.getError() != null) {
+				if (response.getError().getErrorCode() == 190) {
+					throw new AuthenticationException();
 				} else {
-					throw new ParseException();
+					throw new ParseException(response.getError().getErrorMessage());
 				}
 			}
 			
-			try {
-				JSONArray serverContacts;
-				HashMap<String, JSONObject> serverImages = new HashMap<String, JSONObject>();
-				if (album_picture) {
-					JSONArray result = response.getGraphObjectList().getInnerJSONArray();
-					serverContacts = result.getJSONObject(0).getJSONArray("fql_result_set");
-					JSONArray images = result.getJSONObject(1).getJSONArray("fql_result_set");
-					JSONObject image;
-					for (int j = 0; j < images.length(); j++) {
-						image = images.getJSONObject(j);
-						serverImages.put(image.getString("owner"), image);
-					}
-				} else {
-					serverContacts = response.getGraphObjectList().getInnerJSONArray();
-				}
-				
+			JSONObject json = response.getJSONObject();
+			JSONArray friends = json.getJSONArray("data");
+			
+			if (friends != null && friends.length() > 0)
+			{
 				JSONObject contact;
-				for (int i = 0; i < serverContacts.length(); i++) {
-					contact = serverContacts.getJSONObject(i);
-					contact.put("picture", !contact.isNull(pic_size) ? contact.getString(pic_size) : null);
-					if (album_picture && serverImages.containsKey(contact.getString("uid"))) {
-						contact.put("picture", serverImages.get(contact.getString("uid")).getString("src_big"));
-					}
+				for (int i = 0; i < friends.length(); i++) {
+					contact = friends.getJSONObject(i);
+					if (contact.has("picture"))
+						contact.put("picture", contact.getJSONObject("picture").getJSONObject("data").getString("url"));
 					RawContact rawContact = RawContact.valueOf(contact);
+					
 					if (rawContact != null) {
 						serverList.add(rawContact);
 					}
 				}
-				
-				if (serverContacts.length() > limit / 2) {
-					offset += limit;
-					more = true;
-				}
-			} catch (FacebookException e) {
-				throw new ParseException(e.getMessage());
-			} catch (JSONException e) {
-				throw new ParseException(e.getMessage());
+				friendlistRequest = response.getRequestForPagedResults(PagingDirection.NEXT);
+				friendlistRequest.setParameters(parameters);
 			}
-		}
+		} while (friendlistRequest != null);
 		
 		return serverList;
 	}
@@ -274,17 +191,19 @@ final public class NetworkUtilities {
 		
 		Bundle params = new Bundle();
 		ContactsSync app = ContactsSync.getInstance();
+		params.putString("access_token", mAccessToken);
+		params.putString("fields", "url");
 		params.putInt("width", width);
 		params.putInt("height", height);
 		params.putBoolean("redirect", false);
 		params.putInt("timeout", app.getConnectionTimeout() * 1000);
-		Request request = new Request(mSession, contact.getUid() + "/picture", params, HttpMethod.GET);
-		Response response = request.executeAndWait();
+		GraphRequest request = new GraphRequest(null, contact.getUid() + "/picture", params, HttpMethod.GET, null);
+		GraphResponse response = request.executeAndWait();
 		
 		if (response == null) {
 			throw new IOException();
 		}
-		if (response.getGraphObject() == null) {
+		if (response.getJSONObject() == null) {
 			if (response.getError() != null) {
 				if (response.getError().getErrorCode() == 190) {
 					throw new AuthenticationException();
@@ -296,8 +215,8 @@ final public class NetworkUtilities {
 			}
 		}
 		
-		Log.d("FacebookGetPhoto", "response: " + response.getGraphObject().getInnerJSONObject().toString());
-		String image = response.getGraphObject().getInnerJSONObject().getJSONObject("data").getString("url");
+		//Log.d("FacebookGetPhoto", "response: " + response.getJSONObject().toString());
+		String image = response.getJSONObject().getJSONObject("data").getString("url");
 		
 		return new ContactPhoto(contact, image, 0);
 	}
