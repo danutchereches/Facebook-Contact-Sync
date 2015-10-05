@@ -23,7 +23,7 @@
 			android:summary="@string/prefs_sync_pic_size_summary"
 			android:title="@string/prefs_sync_pic_size_title" />
 		<CheckBoxPreference
-			android:defaultValue="false"
+			android:defaultValue="true"
 			android:key="sync_all"
 			android:summary="@string/prefs_sync_all_summary"
 			android:title="@string/prefs_sync_all_title" />
