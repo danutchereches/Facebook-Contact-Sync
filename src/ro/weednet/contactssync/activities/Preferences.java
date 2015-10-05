@@ -197,31 +197,37 @@ public class Preferences extends Activity {
 						ContentResolver.addPeriodicSync(mAccount, ContactsContract.AUTHORITY, extras, DEFAULT_SYNC_FREQUENCY * 3600);
 						mDialog.dismiss();
 						
-						updateStatusMessage(0);
+						init();
 						mFragment.updateViews();
 					}
 				}
 			});
 			mDialog.show();
 		} else {
-			mFragment.setAccount(mAccount);
-			//TODO: check logic
-			if (ContentResolver.getSyncAutomatically(mAccount, ContactsContract.AUTHORITY)) {
-				if (app.getSyncFrequency() == 0) {
-					app.setSyncFrequency(Preferences.DEFAULT_SYNC_FREQUENCY);
-					app.savePreferences();
-					ContentResolver.addPeriodicSync(mAccount, ContactsContract.AUTHORITY, new Bundle(), Preferences.DEFAULT_SYNC_FREQUENCY * 3600);
-				}
-			} else {
-				if (app.getSyncFrequency() > 0) {
-					app.setSyncFrequency(0);
-					app.savePreferences();
-				}
-			}
-			updateStatusMessage(0);
-			final int mask = ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE | ContentResolver.SYNC_OBSERVER_TYPE_PENDING;
-			mSyncObserverHandler = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
+			init();
 		}
+	}
+	
+	
+	private void init() {
+		final ContactsSync app = ContactsSync.getInstance();
+		mFragment.setAccount(mAccount);
+		//TODO: check logic
+		if (ContentResolver.getSyncAutomatically(mAccount, ContactsContract.AUTHORITY)) {
+			if (app.getSyncFrequency() == 0) {
+				app.setSyncFrequency(Preferences.DEFAULT_SYNC_FREQUENCY);
+				app.savePreferences();
+				ContentResolver.addPeriodicSync(mAccount, ContactsContract.AUTHORITY, new Bundle(), Preferences.DEFAULT_SYNC_FREQUENCY * 3600);
+			}
+		} else {
+			if (app.getSyncFrequency() > 0) {
+				app.setSyncFrequency(0);
+				app.savePreferences();
+			}
+		}
+		updateStatusMessage(0);
+		final int mask = ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE | ContentResolver.SYNC_OBSERVER_TYPE_PENDING;
+		mSyncObserverHandler = ContentResolver.addStatusChangeListener(mask, mSyncObserver);
 	}
 	
 	@Override
