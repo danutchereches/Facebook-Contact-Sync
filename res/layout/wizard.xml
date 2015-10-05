@@ -16,7 +16,7 @@
 			android:layout_height="wrap_content"
 			android:padding="16dp"
 			android:orientation="vertical"
-			android:checkedButton="@+id/wizard_sync_type_medium">
+			android:checkedButton="@+id/wizard_sync_type_hard">
 			<RadioButton
 				android:id="@+id/wizard_sync_type_soft"
 				android:layout_width="wrap_content"

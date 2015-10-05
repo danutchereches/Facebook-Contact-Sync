@@ -59,7 +59,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 public class Preferences extends Activity {
-	public final static ContactsSync.SyncType DEFAULT_SYNC_TYPE = ContactsSync.SyncType.MEDIUM;
+	public final static ContactsSync.SyncType DEFAULT_SYNC_TYPE = ContactsSync.SyncType.HARD;
 	public final static int DEFAULT_SYNC_FREQUENCY = 24;//hours
 	public final static int DEFAULT_PICTURE_SIZE = RawContact.IMAGE_SIZES.MAX_SQUARE;
 	public final static boolean DEFAULT_SYNC_ALL = true;
