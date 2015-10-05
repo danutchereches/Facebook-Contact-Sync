@@ -2,6 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 	<PreferenceCategory android:title="@string/prefs_cat_troubleshoot_title" >
 		<Preference
+			android:key="invite"
+			android:summary="@string/prefs_invite_summary"
+			android:title="@string/prefs_invite_title" />
+		<Preference
 			android:key="faq"
 			android:summary="@string/prefs_faq_summary"
 			android:title="@string/prefs_faq_title" />

@@ -5,8 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.widget.AppInviteDialog;
+
 import ro.weednet.ContactsSync;
 import ro.weednet.contactssync.R;
+import ro.weednet.contactssync.activities.Invite;
 import ro.weednet.contactssync.activities.Preferences;
 import ro.weednet.contactssync.activities.TestFacebookApi;
 import ro.weednet.contactssync.iap.IabHelper;
@@ -146,6 +151,10 @@ public class GlobalFragment extends PreferenceFragment {
 	}
 	protected void setTroubleshootEvents() {
 		findPreference("faq").setOnPreferenceClickListener(faqClick);
+		
+		Intent invite_intent = new Intent(getPreferenceActivity(), Invite.class);
+		findPreference("invite").setIntent(invite_intent);
+		
 		findPreference("run_now").setOnPreferenceClickListener(syncNowClick);
 		findPreference("run_now_full").setOnPreferenceClickListener(syncFullNowClick);
 		

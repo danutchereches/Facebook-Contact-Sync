@@ -35,6 +35,8 @@
 	<string name="prefs_cat_troubleshoot_title">Troubleshooting</string>
 	<string name="prefs_troubleshoot_conn_title">Test connection</string>
 	<string name="prefs_troubleshoot_conn_summary">Run tests that check the Facebook API status</string>
+	<string name="prefs_invite_title">Invite friends</string>
+	<string name="prefs_invite_summary">Missing contacts? Ask for authorization to sync their photo.</string>
 	<string name="prefs_faq_title">FAQ</string>
 	<string name="prefs_faq_summary">Don\'t know how to use the app?</string>
 	<string name="prefs_run_now_title">Run sync now</string>
