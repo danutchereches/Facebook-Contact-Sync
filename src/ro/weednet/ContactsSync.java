@@ -179,7 +179,7 @@ public class ContactsSync extends Application {
 	public void reloadPreferences() {
 		SharedPreferences settings = getSharedPreferences();
 		
-		mWizardShown = settings.getBoolean("wizard_shown", settings.getAll().size() > 5 ? true : false);
+		mWizardShown = settings.getBoolean("wizard2_shown", false);
 		
 		try {
 			int type = Integer.parseInt(settings.getString("sync_type", Integer.toString(Preferences.DEFAULT_SYNC_TYPE.ordinal())));
@@ -222,7 +222,7 @@ public class ContactsSync extends Application {
 		editor.putBoolean("full_sync", mFullSync);
 		editor.putString("conn_timeout", Integer.toString(mConnTimeout));
 		editor.putBoolean("disable_ads", mDisableAds);
-		editor.putBoolean("wizard_shown", mWizardShown);
+		editor.putBoolean("wizard2_shown", mWizardShown);
 		
 		editor.commit();
 	}
