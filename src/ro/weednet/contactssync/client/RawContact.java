@@ -119,7 +119,8 @@ final public class RawContact {
 	
 	public static RawContact valueOf(JSONObject contact) {
 		try {
-			final String uid = !contact.isNull("uid") ? contact.getString("uid") : null;
+			final String uid = !contact.isNull("uid") ? contact.getString("uid") :
+									!contact.isNull("id") ? contact.getString("id") : null;
 			// If we didn't get either a uid for the contact,
 			// then we can't do anything with it locally...
 			if (uid == null) {

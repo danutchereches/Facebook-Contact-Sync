@@ -36,7 +36,7 @@ import android.net.NetworkInfo;
 
 public class ContactsSync extends Application {
 	public static enum SyncType {
-		SOFT, MEDIUM, HARD, LEGACY
+		SOFT, MEDIUM, HARD
 	}
 	public final static String NAMESPACE = "ro.weednet.contactssync_preferences";
 	

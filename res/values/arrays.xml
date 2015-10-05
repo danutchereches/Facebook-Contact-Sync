@@ -4,13 +4,11 @@
 		<item>Soft [fastest]\n  sync details only on demand</item>
 		<item>Medium [recommended]\n  always sync details for starred contacts</item>
 		<item>Hard [only for &lt; 100 contacts]\n  keep all details in sync for all contacts</item>
-		<item>Legacy [deprecated]\n  tries to sync all contacts in one shot and disables "on demand" sync</item>
 	</string-array>
 	<string-array name="prefs_sync_type_entry_values">
 		<item>0</item>
 		<item>1</item>
 		<item>2</item>
-		<item>3</item>
 	</string-array>
 	<string-array name="prefs_sync_freq_entries">
 		<item>Disabled</item>

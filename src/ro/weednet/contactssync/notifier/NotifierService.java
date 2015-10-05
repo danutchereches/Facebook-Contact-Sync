@@ -55,10 +55,6 @@ public class NotifierService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		ContactsSync app = ((ContactsSync) getApplication());
 		
-		if (app.getSyncType() == ContactsSync.SyncType.LEGACY) {
-			return;
-		}
-		
 		if (app.getSyncWifiOnly() && !app.wifiConnected()) {
 			return;
 		}
