@@ -169,14 +169,29 @@ public class Preferences extends Activity {
 			mDialog = new Dialog(this);
 			mDialog.setContentView(R.layout.wizard);
 			mDialog.setTitle("Select option");
+			mDialog.findViewById(R.id.invite).setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mDialog.findViewById(R.id.next).callOnClick();
+					
+					Intent intent = new Intent(Preferences.this, Invite.class);
+					startActivity(intent);
+				}
+			});
 			mDialog.findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					if (mDialog.findViewById(R.id.page1).getVisibility() == View.VISIBLE) {
 						mDialog.findViewById(R.id.page1).setVisibility(View.GONE);
 						mDialog.findViewById(R.id.page2).setVisibility(View.VISIBLE);
+						mDialog.findViewById(R.id.page3).setVisibility(View.GONE);
 						((TextView) mDialog.findViewById(R.id.next)).setText(getString(R.string.close));
 					} else if (mDialog.findViewById(R.id.page2).getVisibility() == View.VISIBLE) {
+						mDialog.findViewById(R.id.page1).setVisibility(View.GONE);
+						mDialog.findViewById(R.id.page2).setVisibility(View.GONE);
+						mDialog.findViewById(R.id.page3).setVisibility(View.VISIBLE);
+						((TextView) mDialog.findViewById(R.id.next)).setText(getString(R.string.close));
+					} else if (mDialog.findViewById(R.id.page3).getVisibility() == View.VISIBLE) {
 						
 						if (((RadioButton) mDialog.findViewById(R.id.wizard_sync_type_soft)).isChecked()) {
 							app.setSyncType(SyncType.SOFT);

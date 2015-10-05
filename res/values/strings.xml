@@ -75,6 +75,7 @@
 	<string name="wizard_sync_all_contacts_yes">Sync all Facebook friends</string>
 	<string name="wizard_sync_all_contacts_no">Sync only friends that match existing contacts (same name)</string>
 	<string name="wizard_sync_join_by_id">Match existing contacts also by using Facebook ID</string>
+	<string name="wizard_invite_text">IMPORTANT:\nStarting with v2.0, the Facebook API does not return the entire friend list.\nInstead, it returns only the users that already authorized this app to read it\'s profile.\nSo in order to sync the photos of people who don\'t use this app, you need to ask them to manually grant permissions to this app.\nIt\'s a simple 2 click process.\nYou can use the Invite button bellow or send them this link:\nhttps://contact-sync.weednet.ro</string>
 	
 	<string name="next">Next</string>
 	<string name="close">Close</string>
